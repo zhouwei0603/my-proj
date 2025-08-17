@@ -1,0 +1,21 @@
+{
+  "compilerOptions" : {
+    "module" : "commonjs",
+    "target" : "es5",
+    "esModuleInterop" : true,
+    "types" : ["node"],
+    "outDir" : "build",
+    "allowSyntheticDefaultImports" : true,
+    "moduleResolution" : "Node"
+  },
+  "exclude" : [
+    "node_modules"
+  ],
+  "include" : ["*"],
+  "lib" : ["dom", "es2015", "es2017"],
+  "skipLibCheck": false,
+  "strict": false,
+  "noEmit": false,
+  "resolveJsonModule": true,
+  "isolatedModules": false
+}

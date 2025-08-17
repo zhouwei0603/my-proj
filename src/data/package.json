@@ -1,0 +1,24 @@
+{
+  "name": "data",
+  "version": "1.0.0",
+  "license": "ISC",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "build": "npx tsc server.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "moment": "^2.30.1",
+    "mysql2": "^3.14.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/moment": "^2.11.29",
+    "@types/node": "^24.1.0",
+    "typescript": "^5.9.2"
+  }
+}

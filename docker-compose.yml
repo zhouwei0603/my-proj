@@ -1,0 +1,29 @@
+services:
+  data:
+    build:
+      context: ./
+      dockerfile: data.Dockerfile
+    networks:
+      my-net:
+        aliases:
+          - my-proj-data
+    container_name: data
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+    environment:
+      - DB_HOST=$DB_HOST
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - DB_DBNAME=$DB_DBNAME
+      - DB_PORT=$DB_PORT
+    stdin_open: true
+    tty: true
+
+networks:
+  my-net:
+    name: my-proj
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
