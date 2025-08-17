@@ -8,15 +8,17 @@ import {
   type SelectOptionProps
 } from 'element-plus';
 import { useId } from 'vue';
-import { getLanguage, getStrings, SupportedLanguages } from "../utils/Locale";
+import { getAppPlugin } from "../utils/AppUtils";
+import { SupportedLanguages } from "../utils/LocaleCore";
 
-const strings = getStrings();
+const plugin = getAppPlugin();
+const strings = plugin.strings;
 
 const drawer = defineModel<boolean>("drawer");
 
 // Language settings
 
-const language = getLanguage();
+const language = plugin.language;
 
 const languageId = useId();
 
@@ -30,6 +32,10 @@ const languageOptions: SelectOptionProps[] = [
     label: "简体中文"
   }
 ];
+
+function setLanguage(value: SupportedLanguages) {
+  language.value = value;
+}
 </script>
 
 <template>
@@ -44,7 +50,7 @@ const languageOptions: SelectOptionProps[] = [
         </el-col>
         <el-col class="control">
           <el-select-v2 :id="languageId" :name="languageId" v-model="language" :options="languageOptions"
-            @change="value => language = value" />
+            @change="setLanguage" />
         </el-col>
       </el-row>
     </template>

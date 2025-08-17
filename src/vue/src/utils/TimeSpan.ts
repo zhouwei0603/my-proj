@@ -1,7 +1,9 @@
 import * as _ from "lodash";
-import { type LanguageStringsType } from "./Locale";
+import { type AppPlugin } from "./AppContext";
 
-export function toDisplayString(strings: LanguageStringsType, ms: number): string {
+export function toDisplayString(plugin: AppPlugin, ms: number): string {
+  const strings = plugin.strings;
+
   if (ms >= day) {
     const compiled = _.template(strings.value.app.timeSpan.day);
     const value = ms / day;

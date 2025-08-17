@@ -12,34 +12,33 @@ import {
   ElText
 } from 'element-plus';
 import * as _ from "lodash";
-import { computed, inject, ref, watch } from 'vue';
-import { getStrings } from "../utils/Locale";
-import { key, NotificationState, removeAll, type Notification, type NotificationType } from "../utils/Notification";
+import { computed } from 'vue';
+import { getAppPlugin } from "../utils/AppUtils";
+import { removeAll } from "../utils/Notification";
+import { NotificationState, type Notification } from "../utils/NotificationCore";
 import { toDisplayString } from "../utils/TimeSpan";
 
-const strings = getStrings();
-
-const source = inject<NotificationType>(key) as NotificationType;
-
+const plugin = getAppPlugin();
+const strings = plugin.strings;
 const drawer = defineModel<boolean>("drawer");
 
 // Updates the data if notification changed
 const data = computed(() => {
   const now = Date.now();
 
-  return _.map(source.value.data, n => {
+  return _.map(plugin.notifications.value.data, n => {
     let time = ``;
 
-    if (n.publishTime.value) {
-      const span = now - n.publishTime.value.getTime();
-      time = toDisplayString(strings, span);
+    if (n.publishTime) {
+      const span = now - n.publishTime.getTime();
+      time = toDisplayString(plugin, span);
     }
 
     const d: Datum = {
-      title: n.title.value,
-      message: n.message.value,
+      title: n.title,
+      message: n.message,
       time: time,
-      state: n.state.value,
+      state: n.state,
       notification: n
     };
 
@@ -53,9 +52,9 @@ setInterval(() => {
     const now = Date.now();
 
     _.forEach(data.value, datum => {
-      if (datum.notification.publishTime.value) {
-        const span = now - datum.notification.publishTime.value.getTime();
-        const text = toDisplayString(strings, span);
+      if (datum.notification.publishTime) {
+        const span = now - datum.notification.publishTime.getTime();
+        const text = toDisplayString(plugin, span);
         datum.time = text;
       }
     });
@@ -63,7 +62,7 @@ setInterval(() => {
 }, 60 * 1000);
 
 function clear() {
-  removeAll(source);
+  removeAll(plugin);
 }
 
 interface Datum {
@@ -116,7 +115,7 @@ interface Datum {
 
     <template #footer>
       <div style="flex: auto">
-        <el-button @click="clear" :disabled="data.length === 0" type="primary">
+        <el-button @click="clear" type="primary" :disabled="data.length === 0">
           {{ strings.app.notification.removeAllButton }}
         </el-button>
         <el-button @click="drawer = false">

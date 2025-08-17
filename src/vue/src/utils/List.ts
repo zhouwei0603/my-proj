@@ -1,58 +1,67 @@
 import * as _ from "lodash";
 
-export class List<T> {
-  protected readonly list: T[] = [];
-  protected readonly options: Readonly<Options<T>>;
+export interface List<T> {
+  data: ReadonlyArray<T>;
+  push(...items: T[]): number;
+  clear(): T[];
+  remove(item: T): T | undefined;
+  remove(predicate: (item: T) => boolean): T[];
+  removeAt(index: number): T | undefined;
+}
+
+export class ListImpl<T> implements List<T> {
+  private readonly _list: T[] = [];
+  private readonly _options: Readonly<Options<T>>;
 
   public constructor(options: Readonly<Options<T>>) {
-    this.options = options;
+    this._options = options;
   }
 
   public get data(): ReadonlyArray<T> {
-    return this.list;
+    return this._list;
   }
 
   public push(...items: T[]): number {
     if (items) {
       _.forEach(items, (item) => {
-        this.pushCore(item);
+        this._pushCore(item);
       });
     }
 
-    return this.list.length;
+    return this._list.length;
   }
 
   public clear(): T[] {
-    return _.slice(this.list);
+    return _.slice(this._list);
   }
 
   public remove(item: T): T | undefined;
   public remove(predicate: (item: T) => boolean): T[];
   public remove(param: T | ((item: T) => boolean)): (T | undefined) | T[] {
     if (_.isFunction(param)) {
-      return _.remove(this.list, param);
+      return _.remove(this._list, param);
     } else {
-      const deleted = _.remove(this.list, (item) => item === param);
+      const deleted = _.remove(this._list, (item) => item === param);
       return deleted?.length ? deleted[0] : undefined;
     }
   }
 
   public removeAt(index: number): T | undefined {
-    const deleted = this.list.splice(index, 1);
+    const deleted = this._list.splice(index, 1);
     return deleted?.length ? deleted[0] : undefined;
   }
 
-  protected pushCore(item: T): void {
-    if (this.list.length < this.options.maxSize) {
-      this.list.push(item);
+  private _pushCore(item: T): void {
+    if (this._list.length < this._options.maxSize) {
+      this._list.push(item);
     } else {
-      switch (this.options.behavior) {
+      switch (this._options.behavior) {
         case ExceededBehavior.Custom: {
-          if (this.options.customPredicate) {
-            _.remove(this.list, this.options.customPredicate);
+          if (this._options.customPredicate) {
+            _.remove(this._list, this._options.customPredicate);
 
-            if (this.list.length < this.options.maxSize) {
-              this.list.push(item);
+            if (this._list.length < this._options.maxSize) {
+              this._list.push(item);
             }
           }
 
@@ -61,18 +70,18 @@ export class List<T> {
 
         case ExceededBehavior.RemoveOldest: {
           let indexToRemove = _.findIndex(
-            this.list,
-            this.options.customPredicate || (() => true)
+            this._list,
+            this._options.customPredicate || (() => true)
           );
 
           if (indexToRemove < 0) {
             indexToRemove = 0;
           }
 
-          this.list.splice(indexToRemove, 1);
+          this._list.splice(indexToRemove, 1);
 
-          if (this.list.length < this.options.maxSize) {
-            this.list.push(item);
+          if (this._list.length < this._options.maxSize) {
+            this._list.push(item);
           }
 
           break;

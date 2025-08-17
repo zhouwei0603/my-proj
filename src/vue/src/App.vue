@@ -21,10 +21,12 @@ import { computed, ref } from 'vue';
 import { RouterView } from 'vue-router';
 import AppNotifications from "./components/AppNotifications.vue";
 import AppSettings from "./components/AppSettings.vue";
-import { getLanguage, getStrings, SupportedLanguages } from "./utils/Locale";
+import { getAppPlugin } from "./utils/AppUtils";
+import { SupportedLanguages } from "./utils/LocaleCore";
 
-const language = getLanguage();
-const strings = getStrings();
+const plugin = getAppPlugin();
+const strings = plugin.strings;
+const language = plugin.language;
 const locale = computed(() => (language.value === SupportedLanguages.zhCn ? zhCn : en));
 
 const settingsDrawer = ref(false);

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import ViewPage from "../components/ViewPage.vue";
-import { strings } from "../utils/Locale";
+import { getAppPlugin } from "../utils/AppUtils";
+
+const plugin = getAppPlugin();
+const strings = plugin.strings;
 </script>
 
 <template>

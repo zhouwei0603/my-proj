@@ -1,81 +1,81 @@
 import * as _ from "lodash";
-import { computed, ref, type Ref } from "vue";
-import { List } from "./List";
+import { type AppPlugin } from "./AppContext";
+import {
+  type Notification,
+  NotificationState,
+  type Options,
+} from "./NotificationCore";
 
-export const enum NotificationState {
-  Failed = "Failed",
-  Succeeded = "Succeeded",
-  InProgress = "InProgress",
-}
-
-export interface Options {
-  promise: Promise<any>;
-  failureTitle: string;
-  failureMessage: string;
-  successTitle: string;
-  successMessage: string;
-  inProgressTitle: string;
-  inProgressMessage: string;
-}
-
-export type NotificationType = Ref<List<Notification>, List<Notification>>;
-
-export function removeAll(source: NotificationType): void {
-  source.value.clear();
+export function removeAll(plugin: AppPlugin): void {
+  plugin.notifications.value.clear();
 }
 
 export function publish(
-  source: NotificationType,
+  plugin: AppPlugin,
   options: Readonly<Options>
 ): Notification {
-  const n = new Notification(source, options);
+  const n = new NotificationImpl(plugin.notifications, options);
   n.publish();
   return n;
 }
 
-export class Notification {
-  private readonly _source: NotificationType;
+class NotificationImpl implements Notification {
+  private readonly _notifications: AppPlugin["notifications"];
   private readonly _options: Readonly<Options>;
-  private readonly _publishTime = ref<Date>();
-  private readonly _state = ref<NotificationState>();
-  private readonly _title = ref<string>();
-  private readonly _message = ref<string>();
+  private _publishTime: Date | undefined;
+  private _state: NotificationState;
+  private _title: string;
+  private _message: string;
 
-  public readonly publishTime = computed(() => this._publishTime.value);
-  public readonly state = computed(() => this._state.value || NotificationState.InProgress);
-  public readonly title = computed(() => this._title.value || ``);
-  public readonly message = computed(() => this._message.value || ``);
-
-  public constructor(source: NotificationType, options: Readonly<Options>) {
-    this._source = source;
+  public constructor(
+    notifications: AppPlugin["notifications"],
+    options: Readonly<Options>
+  ) {
+    this._notifications = notifications;
     this._options = options;
 
-    this._state.value = NotificationState.InProgress;
-    this._title.value = options.inProgressTitle;
-    this._message.value = options.inProgressMessage;
+    this._state = NotificationState.InProgress;
+    this._title = options.inProgressTitle;
+    this._message = options.inProgressMessage;
 
     options.promise.then(
       () => {
-        this._state.value = NotificationState.Succeeded;
-        this._title.value = options.successTitle;
-        this._message.value = options.successMessage;
+        this._state = NotificationState.Succeeded;
+        this._title = options.successTitle;
+        this._message = options.successMessage;
       },
       (error) => {
-        this._state.value = NotificationState.Failed;
-        this._title.value = options.failureTitle;
-        this._message.value = this._formatErrorMessage(error);
+        this._state = NotificationState.Failed;
+        this._title = options.failureTitle;
+        this._message = this._formatErrorMessage(error);
       }
     );
   }
 
-  public publish(): void {
-    this._publishTime.value = new Date();
+  public get publishTime(): Date | undefined {
+    return this._publishTime;
+  }
 
-    this._source.value.push(this);
+  public get state(): NotificationState {
+    return this._state;
+  }
+
+  public get title(): string {
+    return this._title;
+  }
+
+  public get message(): string {
+    return this._message;
+  }
+
+  public publish(): void {
+    this._publishTime = new Date();
+
+    this._notifications.value.push(this);
   }
 
   public remove(): void {
-    this._source.value.remove(this);
+    this._notifications.value.remove(this);
   }
 
   private _formatErrorMessage(error: any): string {
@@ -100,5 +100,3 @@ export class Notification {
     return compiled({ msg: error });
   }
 }
-
-export const key = Symbol();

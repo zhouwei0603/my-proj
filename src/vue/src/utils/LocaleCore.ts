@@ -35,6 +35,25 @@ export type Strings = DeepReadonly<{
       minute: string,
       hour: string,
       day: string
+    },
+    views: {
+      part: {
+        create: string,
+        update: string,
+      },
+      poitem: {
+        create: string,
+        update: string,
+      },
+      po: {
+        create: string,
+        update: string,
+      },
     }
   },
 }>;
+
+export const enum SupportedLanguages {
+  en = "en",
+  zhCn = "zh-cn",
+}

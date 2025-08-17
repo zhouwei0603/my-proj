@@ -2,7 +2,10 @@
 import { ref } from "vue";
 import ViewPage from "../components/ViewPage.vue";
 import * as PO from "../stores/po";
-import { strings } from "../utils/Locale";
+import { getAppPlugin } from "../utils/AppUtils";
+
+const plugin = getAppPlugin();
+const strings = plugin.strings;
 
 const pos = ref<PO.PO[]>([]);
 
