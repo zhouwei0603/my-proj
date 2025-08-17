@@ -1,3 +1,5 @@
+import { type Ref } from "vue";
+
 export const enum NotificationState {
   Failed = "Failed",
   Succeeded = "Succeeded",
@@ -15,10 +17,11 @@ export interface Options {
 }
 
 export interface Notification {
-  publishTime: Date | undefined;
-  state: NotificationState;
-  title: string;
-  message: string;
+  id: string;
+  publishTime: Ref<Date | undefined, Date | undefined>;
+  state: Ref<NotificationState, NotificationState>;
+  title: Ref<string, string>;
+  message: Ref<string, string>;
   publish(): void;
   remove(): void;
 }

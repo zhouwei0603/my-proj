@@ -6,19 +6,19 @@ export function toDisplayString(plugin: AppPlugin, ms: number): string {
 
   if (ms >= day) {
     const compiled = _.template(strings.value.app.timeSpan.day);
-    const value = ms / day;
+    const value = _.toInteger(ms / day);
     return compiled({ value });
   }
 
   if (ms >= hour) {
     const compiled = _.template(strings.value.app.timeSpan.hour);
-    const value = ms / hour;
+    const value = _.toInteger(ms / hour);
     return compiled({ value });
   }
 
   if (ms >= minute) {
     const compiled = _.template(strings.value.app.timeSpan.minute);
-    const value = ms / minute;
+    const value = _.toInteger(ms / minute);
     return compiled({ value });
   }
 

@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { CircleCloseFilled, MoreFilled, SuccessFilled } from '@element-plus/icons-vue';
+import { CircleCloseFilled, Close, More, SuccessFilled, InfoFilled } from '@element-plus/icons-vue';
 import {
   ElButton,
   ElCol,
-  ElCollapse,
-  ElCollapseItem,
+  ElContainer,
   ElDrawer,
   ElEmpty,
+  ElFooter,
+  ElHeader,
   ElIcon,
+  ElMain,
   ElRow,
   ElText
 } from 'element-plus';
@@ -15,18 +17,18 @@ import * as _ from "lodash";
 import { computed } from 'vue';
 import { getAppPlugin } from "../utils/AppUtils";
 import { removeAll } from "../utils/Notification";
-import { NotificationState, type Notification } from "../utils/NotificationCore";
+import { NotificationState } from "../utils/NotificationCore";
 import { toDisplayString } from "../utils/TimeSpan";
 
 const plugin = getAppPlugin();
 const strings = plugin.strings;
 const drawer = defineModel<boolean>("drawer");
 
-// Updates the data if notification changed
+//// Updates data if notification changed
 const data = computed(() => {
   const now = Date.now();
 
-  return _.map(plugin.notifications.value.data, n => {
+  return _.map(plugin.notifications.data, n => {
     let time = ``;
 
     if (n.publishTime) {
@@ -35,25 +37,26 @@ const data = computed(() => {
     }
 
     const d: Datum = {
+      id: n.id,
       title: n.title,
       message: n.message,
       time: time,
       state: n.state,
-      notification: n
+      publishTime: n.publishTime
     };
 
     return d;
   });
 });
 
-// Updates time per minute
+//// Updates time per minute
 setInterval(() => {
   if (data.value.length) {
     const now = Date.now();
 
     _.forEach(data.value, datum => {
-      if (datum.notification.publishTime) {
-        const span = now - datum.notification.publishTime.getTime();
+      if (datum.publishTime) {
+        const span = now - datum.publishTime.getTime();
         const text = toDisplayString(plugin, span);
         datum.time = text;
       }
@@ -65,12 +68,17 @@ function clear() {
   removeAll(plugin);
 }
 
+function remove(id: string) {
+  plugin.notifications.remove(n => n.id === id);
+}
+
 interface Datum {
+  id: string;
   title: string;
   message: string;
   time: string;
   state: NotificationState;
-  notification: Notification;
+  publishTime: Date | undefined;
 }
 </script>
 
@@ -81,35 +89,44 @@ interface Datum {
     </template>
 
     <template #default>
-      <div>
-        <el-empty :description="strings.app.notification.emptyDescription" v-if="data.length === 0" />
+      <el-empty :description="strings.app.notification.emptyDescription" v-if="data.length === 0" />
 
-        <el-collapse v-else>
-          <el-collapse-item v-for="datum in data" :title="datum.title">
-            <el-row>
-              <el-col :span="12">
-                <template #title>
-                  <div>
-                    <el-text size="default">{{ datum.title }}</el-text>
-                    <el-icon>
-                      <more-filled v-if="datum.state === NotificationState.InProgress" />
-                      <success-filled v-if="datum.state === NotificationState.Succeeded" />
-                      <circle-close-filled v-if="datum.state === NotificationState.Failed" />
-                    </el-icon>
-                  </div>
-                </template>
-              </el-col>
-              <el-col :span="12">
-                <span>{{ datum.time }}</span>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col>
-                <pre>{{ datum.message }}</pre>
-              </el-col>
-            </el-row>
-          </el-collapse-item>
-        </el-collapse>
+      <div v-else>
+        <el-row v-for="datum in data" :title="datum.title" class="app-notification">
+          <el-container>
+            <el-header height="30px">
+              <el-row>
+                <el-col :span="12" class="title">
+                  <el-icon v-if="datum.state === NotificationState.InProgress" size="22" class="info">
+                    <info-filled />
+                  </el-icon>
+                  <el-icon v-else-if="datum.state === NotificationState.Succeeded" size="22" class="success">
+                    <success-filled />
+                  </el-icon>
+                  <el-icon v-else-if="datum.state === NotificationState.Failed" size="22" class="error">
+                    <circle-close-filled />
+                  </el-icon>
+                  <h4><el-text size="default">{{ datum.title }}</el-text></h4>
+                  <el-icon v-if="datum.state === NotificationState.InProgress">
+                    <more />
+                  </el-icon>
+                </el-col>
+                <el-col :span="12" class="commands">
+                  <el-button :type="''" :icon="Close" link @click="remove(datum.id)"
+                    :title="strings.app.notification.remove"></el-button>
+                </el-col>
+              </el-row>
+            </el-header>
+
+            <el-main>
+              <p>{{ datum.message }}</p>
+            </el-main>
+
+            <el-footer height="30px">
+              <p><el-text size="small">{{ datum.time }}</el-text></p>
+            </el-footer>
+          </el-container>
+        </el-row>
       </div>
     </template>
 
@@ -125,3 +142,66 @@ interface Datum {
     </template>
   </el-drawer>
 </template>
+
+<style scoped>
+.app-notification {
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--el-border-color-extra-light);
+}
+
+.app-notification .el-header {
+  padding: 0;
+}
+
+.app-notification .el-header .title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.app-notification .el-header .title h4 {
+  margin: 0;
+}
+
+.app-notification .el-header .title .el-text {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.app-notification .el-header .title .el-icon.info {
+  color: var(--el-color-primary);
+}
+
+.app-notification .el-header .title .el-icon.error {
+  color: var(--el-color-danger);
+}
+
+.app-notification .el-header .title .el-icon.success {
+  color: var(--el-color-success);
+}
+
+.app-notification .el-header .commands {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.app-notification .el-main {
+  padding: 0;
+}
+
+.app-notification .el-main p {
+  margin: 0;
+}
+
+.app-notification .el-footer {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.app-notification .el-footer p {
+  margin: 0;
+}
+</style>

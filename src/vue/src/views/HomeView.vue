@@ -8,7 +8,7 @@ import { getAppPlugin } from "../utils/AppUtils";
 const plugin = getAppPlugin();
 const strings = plugin.strings;
 
-function init() {
+async function init() {
   for (let index = 0; index < 10; ++index) {
     const seconds = _.random(1000, 60 * 1000);
 
@@ -26,12 +26,16 @@ function init() {
 
     publish(plugin, {
       promise,
-      failureTitle: `Error`,
-      failureMessage: `There was an unknown error occurred. ID: ${index} \${ msg }`,
-      successTitle: `Success`,
-      successMessage: `The operation was successfully completed. ID: ${index}`,
-      inProgressTitle: `In progress`,
-      inProgressMessage: `We are working on the operation. ID: ${index}`
+      failureTitle: `Error ID: ${index}`,
+      failureMessage: `There was an unknown error occurred. \${ msg }`,
+      successTitle: `Success ID: ${index}`,
+      successMessage: `The operation was successfully completed.`,
+      inProgressTitle: `In progress ID: ${index}`,
+      inProgressMessage: `We are working on the operation.`
+    });
+
+    await new Promise((resolve) => {
+      _.delay(() => resolve(undefined), 3 * 1000);
     });
   }
 }

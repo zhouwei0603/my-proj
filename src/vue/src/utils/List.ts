@@ -2,7 +2,7 @@ import * as _ from "lodash";
 
 export interface List<T> {
   data: ReadonlyArray<T>;
-  push(...items: T[]): number;
+  add(...items: T[]): number;
   clear(): T[];
   remove(item: T): T | undefined;
   remove(predicate: (item: T) => boolean): T[];
@@ -21,10 +21,10 @@ export class ListImpl<T> implements List<T> {
     return this._list;
   }
 
-  public push(...items: T[]): number {
+  public add(...items: T[]): number {
     if (items) {
       _.forEach(items, (item) => {
-        this._pushCore(item);
+        this._addCore(item);
       });
     }
 
@@ -32,7 +32,7 @@ export class ListImpl<T> implements List<T> {
   }
 
   public clear(): T[] {
-    return _.slice(this._list);
+    return this._list.splice(0);
   }
 
   public remove(item: T): T | undefined;
@@ -51,9 +51,9 @@ export class ListImpl<T> implements List<T> {
     return deleted?.length ? deleted[0] : undefined;
   }
 
-  private _pushCore(item: T): void {
+  private _addCore(item: T): void {
     if (this._list.length < this._options.maxSize) {
-      this._list.push(item);
+      this._insertOrAppend(item);
     } else {
       switch (this._options.behavior) {
         case ExceededBehavior.Custom: {
@@ -61,7 +61,7 @@ export class ListImpl<T> implements List<T> {
             _.remove(this._list, this._options.customPredicate);
 
             if (this._list.length < this._options.maxSize) {
-              this._list.push(item);
+              this._insertOrAppend(item);
             }
           }
 
@@ -69,19 +69,32 @@ export class ListImpl<T> implements List<T> {
         }
 
         case ExceededBehavior.RemoveOldest: {
-          let indexToRemove = _.findIndex(
-            this._list,
-            this._options.customPredicate || (() => true)
-          );
+          let indexToRemove = -1;
+
+          if (this._options.reversed) {
+            indexToRemove = _.findLastIndex(
+              this._list,
+              this._options.customPredicate || (() => true)
+            );
+          } else {
+            indexToRemove = _.findIndex(
+              this._list,
+              this._options.customPredicate || (() => true)
+            );
+          }
 
           if (indexToRemove < 0) {
-            indexToRemove = 0;
+            if (this._options.reversed) {
+              indexToRemove = this._list.length - 1;
+            } else {
+              indexToRemove = 0;
+            }
           }
 
           this._list.splice(indexToRemove, 1);
 
           if (this._list.length < this._options.maxSize) {
-            this._list.push(item);
+            this._insertOrAppend(item);
           }
 
           break;
@@ -93,11 +106,20 @@ export class ListImpl<T> implements List<T> {
       }
     }
   }
+
+  private _insertOrAppend(item: T): void {
+    if (this._options.reversed) {
+      this._list.splice(0, 0, item);
+    } else {
+      this._list.push(item);
+    }
+  }
 }
 
 export interface Options<T> {
   maxSize: number;
   behavior: ExceededBehavior;
+  reversed?: boolean;
   customPredicate?: (item: T) => boolean;
 }
 

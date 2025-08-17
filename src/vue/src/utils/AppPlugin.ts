@@ -1,4 +1,4 @@
-import { type App, computed, type Plugin, ref } from "vue";
+import { type App, computed, type Plugin, reactive, ref } from "vue";
 import { type AppPlugin } from "./AppContext";
 import { ExceededBehavior, type List, ListImpl } from "./List";
 import { strings as en } from "./Locale-en";
@@ -15,11 +15,12 @@ export const appPlugin: Plugin = {
         language.value === SupportedLanguages.zhCn ? zhCn : en
       ),
       language: language,
-      notifications: ref<List<Notification>>(
+      notifications: reactive<List<Notification>>(
         new ListImpl<Notification>({
           maxSize: 100,
           behavior: ExceededBehavior.RemoveOldest,
-          customPredicate: (n) => n.state === NotificationState.Succeeded,
+          reversed: true,
+          customPredicate: (n) => n.state.value === NotificationState.Succeeded,
         })
       ),
     };

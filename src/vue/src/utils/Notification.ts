@@ -1,4 +1,6 @@
+import { ElNotification, notificationTypes } from "element-plus";
 import * as _ from "lodash";
+import { ref } from "vue";
 import { type AppPlugin } from "./AppContext";
 import {
   type Notification,
@@ -7,7 +9,7 @@ import {
 } from "./NotificationCore";
 
 export function removeAll(plugin: AppPlugin): void {
-  plugin.notifications.value.clear();
+  plugin.notifications.clear();
 }
 
 export function publish(
@@ -22,10 +24,11 @@ export function publish(
 class NotificationImpl implements Notification {
   private readonly _notifications: AppPlugin["notifications"];
   private readonly _options: Readonly<Options>;
-  private _publishTime: Date | undefined;
-  private _state: NotificationState;
-  private _title: string;
-  private _message: string;
+  public readonly id = _.uniqueId("proj-notification-");
+  public readonly publishTime = ref<Date | undefined>();
+  public readonly state = ref<NotificationState>(NotificationState.InProgress);
+  public readonly title = ref<string>("");
+  public readonly message = ref<string>("");
 
   public constructor(
     notifications: AppPlugin["notifications"],
@@ -34,48 +37,38 @@ class NotificationImpl implements Notification {
     this._notifications = notifications;
     this._options = options;
 
-    this._state = NotificationState.InProgress;
-    this._title = options.inProgressTitle;
-    this._message = options.inProgressMessage;
+    this.state.value = NotificationState.InProgress;
+    this.title.value = options.inProgressTitle;
+    this.message.value = options.inProgressMessage;
 
     options.promise.then(
       () => {
-        this._state = NotificationState.Succeeded;
-        this._title = options.successTitle;
-        this._message = options.successMessage;
+        this.state.value = NotificationState.Succeeded;
+        this.title.value = options.successTitle;
+        this.message.value = options.successMessage;
+
+        this._showPopup("success");
       },
       (error) => {
-        this._state = NotificationState.Failed;
-        this._title = options.failureTitle;
-        this._message = this._formatErrorMessage(error);
+        this.state.value = NotificationState.Failed;
+        this.title.value = options.failureTitle;
+        this.message.value = this._formatErrorMessage(error);
+
+        this._showPopup("error");
       }
     );
   }
 
-  public get publishTime(): Date | undefined {
-    return this._publishTime;
-  }
-
-  public get state(): NotificationState {
-    return this._state;
-  }
-
-  public get title(): string {
-    return this._title;
-  }
-
-  public get message(): string {
-    return this._message;
-  }
-
   public publish(): void {
-    this._publishTime = new Date();
+    this.publishTime.value = new Date();
 
-    this._notifications.value.push(this);
+    this._notifications.add(this);
+
+    this._showPopup("info");
   }
 
   public remove(): void {
-    this._notifications.value.remove(this);
+    this._notifications.remove(this);
   }
 
   private _formatErrorMessage(error: any): string {
@@ -99,4 +92,16 @@ class NotificationImpl implements Notification {
 
     return compiled({ msg: error });
   }
+
+  private _showPopup(
+    type: ElNotificationType[1] | ElNotificationType[2] | ElNotificationType[4]
+  ): void {
+    ElNotification({
+      title: this.title.value,
+      message: this.message.value,
+      type: type,
+    });
+  }
 }
+
+type ElNotificationType = typeof notificationTypes;
