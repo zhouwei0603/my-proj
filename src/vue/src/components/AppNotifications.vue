@@ -14,7 +14,7 @@ import {
   ElText
 } from 'element-plus';
 import * as _ from "lodash";
-import { computed } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 import { getAppPlugin } from "../utils/AppUtils";
 import { removeAll } from "../utils/Notification";
 import { NotificationState } from "../utils/NotificationCore";
@@ -45,7 +45,7 @@ const data = computed(() => {
       publishTime: n.publishTime
     };
 
-    return d;
+    return ref(d);
   });
 });
 
@@ -55,10 +55,10 @@ setInterval(() => {
     const now = Date.now();
 
     _.forEach(data.value, datum => {
-      if (datum.publishTime) {
-        const span = now - datum.publishTime.getTime();
+      if (datum.value.publishTime) {
+        const span = now - datum.value.publishTime.getTime();
         const text = toDisplayString(plugin, span);
-        datum.time = text;
+        datum.value.time = text;
       }
     });
   }
@@ -92,38 +92,38 @@ interface Datum {
       <el-empty :description="strings.app.notification.emptyDescription" v-if="data.length === 0" />
 
       <div v-else>
-        <el-row v-for="datum in data" :title="datum.title" class="app-notification">
+        <el-row v-for="datum in data" :title="datum.value.title" class="app-notification">
           <el-container>
             <el-header height="30px">
               <el-row>
                 <el-col :span="12" class="title">
-                  <el-icon v-if="datum.state === NotificationState.InProgress" size="22" class="info">
+                  <el-icon v-if="datum.value.state === NotificationState.InProgress" size="24" class="info">
                     <info-filled />
                   </el-icon>
-                  <el-icon v-else-if="datum.state === NotificationState.Succeeded" size="22" class="success">
+                  <el-icon v-else-if="datum.value.state === NotificationState.Succeeded" size="24" class="success">
                     <success-filled />
                   </el-icon>
-                  <el-icon v-else-if="datum.state === NotificationState.Failed" size="22" class="error">
+                  <el-icon v-else-if="datum.value.state === NotificationState.Failed" size="24" class="error">
                     <circle-close-filled />
                   </el-icon>
-                  <h4><el-text size="default">{{ datum.title }}</el-text></h4>
-                  <el-icon v-if="datum.state === NotificationState.InProgress">
+                  <h4><el-text size="default">{{ datum.value.title }}</el-text></h4>
+                  <el-icon v-if="datum.value.state === NotificationState.InProgress">
                     <more />
                   </el-icon>
                 </el-col>
                 <el-col :span="12" class="commands">
-                  <el-button :type="''" :icon="Close" link @click="remove(datum.id)"
+                  <el-button :type="''" :icon="Close" link @click="remove(datum.value.id)"
                     :title="strings.app.notification.remove"></el-button>
                 </el-col>
               </el-row>
             </el-header>
 
             <el-main>
-              <p>{{ datum.message }}</p>
+              <p>{{ datum.value.message }}</p>
             </el-main>
 
             <el-footer height="30px">
-              <p><el-text size="small">{{ datum.time }}</el-text></p>
+              <p><el-text size="small">{{ datum.value.time }}</el-text></p>
             </el-footer>
           </el-container>
         </el-row>
@@ -169,7 +169,7 @@ interface Datum {
 }
 
 .app-notification .el-header .title .el-icon.info {
-  color: var(--el-color-primary);
+  color: var(--el-color-info);
 }
 
 .app-notification .el-header .title .el-icon.error {

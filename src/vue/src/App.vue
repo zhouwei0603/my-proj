@@ -31,6 +31,8 @@ const locale = computed(() => (language.value === SupportedLanguages.zhCn ? zhCn
 
 const settingsDrawer = ref(false);
 const notificationDrawer = ref(false);
+
+const iconSize = 24;
 </script>
 
 <template>
@@ -51,7 +53,7 @@ const notificationDrawer = ref(false);
               <el-menu router default-active="1" :default-openeds="['1', '2', '3']" class="app-navigator">
                 <el-menu-item index="1" route="/" :title="strings.app.navigator.overview">
                   <template #title>
-                    <el-icon>
+                    <el-icon :size="iconSize">
                       <home-filled />
                     </el-icon>
                     <span>{{ strings.app.navigator.overview }}</span>
@@ -59,14 +61,14 @@ const notificationDrawer = ref(false);
                 </el-menu-item>
                 <el-sub-menu index="2" :title="strings.app.navigator.management">
                   <template #title>
-                    <el-icon>
+                    <el-icon :size="iconSize">
                       <management />
                     </el-icon>
                     <span>{{ strings.app.navigator.management }}</span>
                   </template>
                   <el-menu-item index="2-1" route="/polist" :title="strings.app.navigator.po">
                     <template #title>
-                      <el-icon>
+                      <el-icon :size="iconSize">
                         <collection />
                       </el-icon>
                       <span>{{ strings.app.navigator.po }}</span>
@@ -74,7 +76,7 @@ const notificationDrawer = ref(false);
                   </el-menu-item>
                   <el-menu-item index="2-2" route="/partlist" :title="strings.app.navigator.part">
                     <template #title>
-                      <el-icon>
+                      <el-icon :size="iconSize">
                         <files />
                       </el-icon>
                       <span>{{ strings.app.navigator.part }}</span>
@@ -83,14 +85,14 @@ const notificationDrawer = ref(false);
                 </el-sub-menu>
                 <el-sub-menu index="3" :title="strings.app.navigator.help">
                   <template #title>
-                    <el-icon>
+                    <el-icon :size="iconSize">
                       <help-filled />
                     </el-icon>
                     <span>{{ strings.app.navigator.help }}</span>
                   </template>
                   <el-menu-item index="3-1" route="/help" :title="strings.app.navigator.document">
                     <template #title>
-                      <el-icon>
+                      <el-icon :size="iconSize">
                         <document />
                       </el-icon>
                       <span>{{ strings.app.navigator.document }}</span>
@@ -98,7 +100,7 @@ const notificationDrawer = ref(false);
                   </el-menu-item>
                   <el-menu-item index="3-2" route="/about" :title="strings.app.navigator.about">
                     <template #title>
-                      <el-icon>
+                      <el-icon :size="iconSize">
                         <house />
                       </el-icon>
                       <span>{{ strings.app.navigator.about }}</span>
@@ -129,10 +131,16 @@ const notificationDrawer = ref(false);
 
 .app-layout .app-main {
   margin: 0;
+  padding-top: 0;
+  padding-left: 0;
 }
 
 .app-layout .app-navigator {
   border-right: none;
+}
+
+.app-layout .app-navigator .el-icon {
+  margin-right: 10px;
 }
 
 .app-layout .app-header {

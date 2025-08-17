@@ -16,7 +16,7 @@ async function init() {
 
     if (seconds % 3 === 0) {
       promise = new Promise((_resolve, reject) => {
-        _.delay(() => reject({ message: `A backend error occurred.` }), seconds);
+        _.delay(() => reject({ message: `An internal backend error occurred.` }), seconds);
       });
     } else {
       promise = new Promise((resolve, _reject) => {
@@ -27,7 +27,7 @@ async function init() {
     publish(plugin, {
       promise,
       failureTitle: `Error ID: ${index}`,
-      failureMessage: `There was an unknown error occurred. \${ msg }`,
+      failureMessage: `There was an unknown error occurred. \${ msg } Please try again later.`,
       successTitle: `Success ID: ${index}`,
       successMessage: `The operation was successfully completed.`,
       inProgressTitle: `In progress ID: ${index}`,
