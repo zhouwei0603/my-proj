@@ -18,7 +18,7 @@ import {
 import en from 'element-plus/es/locale/lang/en';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import { computed, ref } from 'vue';
-import { RouterView } from 'vue-router';
+import { RouterView, useRoute } from 'vue-router';
 import AppNotifications from "./components/AppNotifications.vue";
 import AppSettings from "./components/AppSettings.vue";
 import { getAppPlugin } from "./utils/AppUtils";
@@ -31,6 +31,20 @@ const locale = computed(() => (language.value === SupportedLanguages.zhCn ? zhCn
 
 const settingsDrawer = ref(false);
 const notificationDrawer = ref(false);
+
+const menus = new Map<string, string>([
+  ["/", "1"],
+  ["management", "2"],
+  ["/polist", "2-1"],
+  ["/partlist", "2-2"],
+  ["help", "3"],
+  ["/help", "3-1"],
+  ["/about", "3-2"],
+]);
+function getCurrentActive() {
+  const route = useRoute();
+  return menus.get(route.path.toLowerCase());
+}
 
 const iconSize = 24;
 </script>
@@ -50,8 +64,9 @@ const iconSize = 24;
         <el-splitter>
           <el-splitter-panel size="200px">
             <el-scrollbar>
-              <el-menu router default-active="1" :default-openeds="['1', '2', '3']" class="app-navigator">
-                <el-menu-item index="1" route="/" :title="strings.app.navigator.overview">
+              <el-menu router :default-active="getCurrentActive()" :default-openeds="['1', '2', '3']"
+                class="app-navigator">
+                <el-menu-item :index="menus.get('/')" route="/" :title="strings.app.navigator.overview">
                   <template #title>
                     <el-icon :size="iconSize">
                       <home-filled />
@@ -59,14 +74,14 @@ const iconSize = 24;
                     <span>{{ strings.app.navigator.overview }}</span>
                   </template>
                 </el-menu-item>
-                <el-sub-menu index="2" :title="strings.app.navigator.management">
+                <el-sub-menu :index="menus.get('management') as string" :title="strings.app.navigator.management">
                   <template #title>
                     <el-icon :size="iconSize">
                       <management />
                     </el-icon>
                     <span>{{ strings.app.navigator.management }}</span>
                   </template>
-                  <el-menu-item index="2-1" route="/polist" :title="strings.app.navigator.po">
+                  <el-menu-item :index="menus.get('/polist')" route="/polist" :title="strings.app.navigator.po">
                     <template #title>
                       <el-icon :size="iconSize">
                         <collection />
@@ -74,7 +89,7 @@ const iconSize = 24;
                       <span>{{ strings.app.navigator.po }}</span>
                     </template>
                   </el-menu-item>
-                  <el-menu-item index="2-2" route="/partlist" :title="strings.app.navigator.part">
+                  <el-menu-item :index="menus.get('/partlist')" route="/partlist" :title="strings.app.navigator.part">
                     <template #title>
                       <el-icon :size="iconSize">
                         <files />
@@ -83,14 +98,14 @@ const iconSize = 24;
                     </template>
                   </el-menu-item>
                 </el-sub-menu>
-                <el-sub-menu index="3" :title="strings.app.navigator.help">
+                <el-sub-menu :index="menus.get('help') as string" :title="strings.app.navigator.help">
                   <template #title>
                     <el-icon :size="iconSize">
                       <help-filled />
                     </el-icon>
                     <span>{{ strings.app.navigator.help }}</span>
                   </template>
-                  <el-menu-item index="3-1" route="/help" :title="strings.app.navigator.document">
+                  <el-menu-item :index="menus.get('/help')" route="/help" :title="strings.app.navigator.document">
                     <template #title>
                       <el-icon :size="iconSize">
                         <document />
@@ -98,7 +113,7 @@ const iconSize = 24;
                       <span>{{ strings.app.navigator.document }}</span>
                     </template>
                   </el-menu-item>
-                  <el-menu-item index="3-2" route="/about" :title="strings.app.navigator.about">
+                  <el-menu-item :index="menus.get('/about')" route="/about" :title="strings.app.navigator.about">
                     <template #title>
                       <el-icon :size="iconSize">
                         <house />

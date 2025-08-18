@@ -1,6 +1,10 @@
 import axios, { AxiosError } from "axios";
 import * as _ from "lodash";
 
+const dataEndpoint: string = import.meta.env.VITE_DATA_PARTY_ENDPOINT;
+
+console.log(`Data endpoint: ${dataEndpoint}`);
+
 export async function get<T>(relativeUrl: string) {
   return execute(async () => {
     const { data } = await getInstance(relativeUrl).get<T>(relativeUrl);
@@ -64,7 +68,7 @@ function getInstance(relativeUrl: string, content?: any) {
 }
 
 const withContentInstance = axios.create({
-  baseURL: "http://localhost:6868/api",
+  baseURL: dataEndpoint,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -72,7 +76,7 @@ const withContentInstance = axios.create({
 });
 
 const withoutContentInstance = axios.create({
-  baseURL: "http://localhost:6868/api",
+  baseURL: dataEndpoint,
   headers: {
     Accept: "application/json",
   },
