@@ -2,14 +2,14 @@ services:
   data:
     build:
       context: ./
-      dockerfile: data.Dockerfile
+      dockerfile: data.local.Dockerfile
     networks:
       my-net:
         aliases:
           - my-proj-data
     container_name: data
     restart: unless-stopped
-    env_file: ./.env
+    env_file: ./.env.data.local
     ports:
       - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
     environment:
@@ -18,6 +18,24 @@ services:
       - DB_PASSWORD=$DB_PASSWORD
       - DB_DBNAME=$DB_DBNAME
       - DB_PORT=$DB_PORT
+    stdin_open: true
+    tty: true
+
+  vue:
+    build:
+      context: ./
+      dockerfile: vue.local.Dockerfile
+    networks:
+      my-net:
+        aliases:
+          - my-proj-vue
+    container_name: vue
+    restart: unless-stopped
+    env_file: ./.env.vue.local
+    ports:
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+    environment:
+      - VITE_DATA_PARTY_ENDPOINT=$VITE_DATA_PARTY_ENDPOINT
     stdin_open: true
     tty: true
 
