@@ -1,6 +1,6 @@
 {
   "name": "vue",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -9,8 +9,10 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
+    "build-local": "run-p type-check \"build-local-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
+    "build-local-only": "vite build --mode developmentlocal",
     "type-check": "vue-tsc --build"
   },
   "dependencies": {

@@ -9,15 +9,14 @@ services:
           - my-proj-data
     container_name: data
     restart: unless-stopped
-    env_file: ./.env.data.local
     ports:
-      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+      - 8686:8080
     environment:
-      - DB_HOST=$DB_HOST
-      - DB_USER=$DB_USER
-      - DB_PASSWORD=$DB_PASSWORD
-      - DB_DBNAME=$DB_DBNAME
-      - DB_PORT=$DB_PORT
+      - DB_HOST=my-mysql
+      - DB_USER=mydbuser
+      - DB_PASSWORD=Password01!
+      - DB_DBNAME=mydb
+      - DB_PORT=3306
     stdin_open: true
     tty: true
 
@@ -31,11 +30,10 @@ services:
           - my-proj-vue
     container_name: vue
     restart: unless-stopped
-    env_file: ./.env.vue.local
     ports:
-      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+      - 7676:7070
     environment:
-      - VITE_DATA_PARTY_ENDPOINT=$VITE_DATA_PARTY_ENDPOINT
+      - VITE_DATA_PARTY_ENDPOINT=http://my-proj-data:8080/api
     stdin_open: true
     tty: true
 
