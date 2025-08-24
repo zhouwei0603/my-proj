@@ -15,13 +15,9 @@ const pool = MySql.createPool({
   queueLimit: 0,
 });
 
-export const toMySqlString = (value: Date) =>
-  moment(value).format("YYYY-MM-DD HH:mm:ss");
+export const toMySqlString = (value: Date) => moment(value).format("YYYY-MM-DD HH:mm:ss");
 
-export const execute = async <T>(
-  action: (connection: MySql.PoolConnection) => Promise<T>,
-  log: Log.Context
-) => {
+export const execute = async <T>(action: (connection: MySql.PoolConnection) => Promise<T>, log: Log.Context) => {
   // Get a connection from the pool
   const connection = await pool.getConnection();
 
@@ -38,7 +34,37 @@ export const execute = async <T>(
   }
 };
 
+export const appendPagingSql = (sql: string, params: GetAllParams) => {
+  let start = params.start || 0;
+  let end = params.end || 99;
+
+  if (typeof params.end === "undefined") {
+    if (typeof params.size === "undefined") {
+      end = start + 99;
+    } else {
+      end = start + params.size - 1;
+    }
+  } else {
+    end = params.end;
+  }
+
+  sql += ` LIMIT ${end - start + 1} OFFSET ${start}`;
+
+  return sql;
+};
+
 export interface DbError {
   kind: "not_found" | "internal";
   message: string;
+}
+
+export interface GetAllParams {
+  start?: number;
+  end?: number;
+  size?: number;
+}
+
+export interface GetAllResponseBody<T = any> {
+  total: number;
+  value: T[];
 }

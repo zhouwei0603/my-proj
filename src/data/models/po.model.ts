@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import * as MySql from "mysql2";
 import * as Log from "../log/log";
-import { execute, toMySqlString } from "./db";
+import { appendPagingSql, execute, GetAllParams, toMySqlString } from "./db";
 
 export interface PO {
   id: string;
@@ -12,10 +12,7 @@ export interface PO {
   modifiedby?: string;
 }
 
-export const create = async (
-  po: Omit<PO, "id" | "created" | "modified" | "modifiedby">,
-  log: Log.Context
-) => {
+export const create = async (po: Omit<PO, "id" | "created" | "modified" | "modifiedby">, log: Log.Context) => {
   return await execute(async (connection) => {
     const obj: PO = {
       id: randomUUID().toLowerCase(),
@@ -24,10 +21,12 @@ export const create = async (
       createdby: po.createdby,
     };
 
-    await connection.execute(
-      "INSERT INTO po SET id = ?, title = ?, created = ?, createdby = ?",
-      [obj.id, obj.title, obj.created, obj.createdby]
-    );
+    const sql = "INSERT INTO po SET id = ?, title = ?, created = ?, createdby = ?";
+    const params = [obj.id, obj.title, obj.created, obj.createdby];
+
+    Log.writeInfo("DB will create po: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    await connection.execute(sql, params);
 
     Log.writeInfo("DB created po: ", Object.assign({ data: obj }, log));
 
@@ -37,10 +36,12 @@ export const create = async (
 
 export const findById = async (id: string, log: Log.Context) => {
   return await execute(async (connection) => {
-    const res = await connection.execute<MySql.RowDataPacket[]>(
-      `SELECT * FROM po WHERE id = ?`,
-      [id]
-    );
+    const sql = `SELECT * FROM part WHERE id = ?`;
+    const params = [id];
+
+    Log.writeInfo("DB will find po: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    const res = await connection.execute<MySql.RowDataPacket[]>(sql, params);
 
     const rows = res[0];
 
@@ -51,25 +52,42 @@ export const findById = async (id: string, log: Log.Context) => {
 
       return obj;
     } else {
-      throw { kind: "not_found", message: `The po with id ${id} was not found.` };
+      throw {
+        kind: "not_found",
+        message: `The po with id ${id} was not found.`,
+      };
     }
   }, log);
 };
 
-export const getAll = async (title: string, log: Log.Context) => {
+export const getAll = async (title: string, params: GetAllParams, log: Log.Context) => {
   return await execute(async (connection) => {
-    let query = "SELECT * FROM po";
+    let valueSql = "SELECT * FROM po";
+    let totalSql = "SELECT COUNT(id) as total FROM po";
 
     if (title) {
-      query += ` WHERE title LIKE '%${title}%'`;
+      const where = ` WHERE title LIKE '%${title}%'`;
+      valueSql += where;
+      totalSql += where;
     }
 
-    const res = await connection.execute<MySql.RowDataPacket[]>(query);
-    const rows = res[0];
+    valueSql = appendPagingSql(valueSql, params);
 
-    Log.writeInfo("DB pos: ", Object.assign({ data: rows }, log));
+    Log.writeInfo("DB will get pos: ", Object.assign({ data: { valueSql, totalSql } }, log));
 
-    return rows as PO[];
+    const res = await Promise.all([
+      connection.execute<MySql.RowDataPacket[]>(valueSql),
+      connection.execute<MySql.RowDataPacket[]>(totalSql),
+    ]);
+
+    const result = {
+      total: res[1][0][0]["total"],
+      value: res[0][0],
+    };
+
+    Log.writeInfo("DB got pos: ", Object.assign({ data: result }, log));
+
+    return result;
   }, log);
 };
 
@@ -85,13 +103,18 @@ export const updateById = async (
       modifiedby: po.modifiedby,
     };
 
-    const res = await connection.execute<MySql.ResultSetHeader>(
-      "UPDATE po SET title = ?, modified = ?, modifiedby = ? WHERE id = ?",
-      [obj.title, obj.modified, obj.modifiedby, id]
-    );
+    const sql = "UPDATE po SET title = ?, modified = ?, modifiedby = ? WHERE id = ?";
+    const params = [obj.title, obj.modified, obj.modifiedby, id];
+
+    Log.writeInfo("DB will update po: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    const res = await connection.execute<MySql.ResultSetHeader>(sql, params);
 
     if (res[0].affectedRows === 0) {
-      throw { kind: "not_found", message: `The po with id ${id} was not found.` };
+      throw {
+        kind: "not_found",
+        message: `The po with id ${id} was not found.`,
+      };
     } else {
       Log.writeInfo("DB updated po: ", Object.assign({ data: obj }, log));
 
@@ -102,13 +125,18 @@ export const updateById = async (
 
 export const remove = async (id: string, log: Log.Context) => {
   return await execute(async (connection) => {
-    const res = await connection.execute<MySql.ResultSetHeader>(
-      "DELETE FROM po WHERE id = ?",
-      [id]
-    );
+    const sql = "DELETE FROM po WHERE id = ?";
+    const params = [id];
+
+    Log.writeInfo("DB will delete po: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    const res = await connection.execute<MySql.ResultSetHeader>(sql, [id]);
 
     if (res[0].affectedRows == 0) {
-      throw { kind: "not_found", message: `The po with id ${id} was not found.` };
+      throw {
+        kind: "not_found",
+        message: `The po with id ${id} was not found.`,
+      };
     } else {
       Log.writeInfo(`DB deleted po with id: ${id}`, log);
     }

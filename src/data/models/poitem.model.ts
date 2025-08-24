@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import * as MySql from "mysql2";
 import * as Log from "../log/log";
-import { execute, toMySqlString } from "./db";
+import { appendPagingSql, execute, GetAllParams, toMySqlString } from "./db";
 
 export interface POItem {
   id: string;
@@ -14,10 +14,7 @@ export interface POItem {
   modifiedby?: string;
 }
 
-export const create = async (
-  item: Omit<POItem, "id" | "created" | "modified" | "modifiedby">,
-  log: Log.Context
-) => {
+export const create = async (item: Omit<POItem, "id" | "created" | "modified" | "modifiedby">, log: Log.Context) => {
   return await execute(async (connection) => {
     const obj: POItem = {
       id: randomUUID().toLowerCase(),
@@ -28,10 +25,12 @@ export const create = async (
       createdby: item.createdby,
     };
 
-    await connection.execute(
-      "INSERT INTO poitem SET id = ?, poid = ?, partid = ?, count = ?, created = ?, createdby = ?",
-      [obj.id, obj.poid, obj.partid, obj.count, obj.created, obj.createdby]
-    );
+    const sql = "INSERT INTO poitem SET id = ?, poid = ?, partid = ?, count = ?, created = ?, createdby = ?";
+    const params = [obj.id, obj.poid, obj.partid, obj.count, obj.created, obj.createdby];
+
+    Log.writeInfo("DB will create poitem: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    await connection.execute(sql, params);
 
     Log.writeInfo("DB created poitem: ", Object.assign({ data: obj }, log));
 
@@ -41,10 +40,12 @@ export const create = async (
 
 export const findById = async (id: string, log: Log.Context) => {
   return await execute(async (connection) => {
-    const res = await connection.execute<MySql.RowDataPacket[]>(
-      `SELECT * FROM poitem WHERE id = ?`,
-      [id]
-    );
+    const sql = `SELECT * FROM poitem WHERE id = ?`;
+    const params = [id];
+
+    Log.writeInfo("DB will find poitem: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    const res = await connection.execute<MySql.RowDataPacket[]>(sql, params);
 
     const rows = res[0];
 
@@ -55,34 +56,49 @@ export const findById = async (id: string, log: Log.Context) => {
 
       return obj;
     } else {
-      throw { kind: "not_found", message: `The poitem with id ${id} was not found.` };
+      throw {
+        kind: "not_found",
+        message: `The poitem with id ${id} was not found.`,
+      };
     }
   }, log);
 };
 
-export const getAll = async (poid: string, log: Log.Context) => {
+export const getAll = async (poid: string, params: GetAllParams, log: Log.Context) => {
   return await execute(async (connection) => {
-    let res = await connection.execute<MySql.RowDataPacket[]>(
-      `SELECT id FROM po WHERE id = ?`,
-      [poid]
-    );
+    {
+      const res = await connection.execute<MySql.RowDataPacket[]>(`SELECT id FROM po WHERE id = ?`, [poid]);
 
-    if (!res[0].length) {
-      Log.writeError(`DB found po with id: ${poid}`, log);
+      if (!res[0].length) {
+        Log.writeError(`DB found po with id: ${poid}`, log);
 
-      throw { kind: "not_found", message: `The po with id ${poid} was not found.` };
+        throw {
+          kind: "not_found",
+          message: `The po with id ${poid} was not found.`,
+        };
+      }
     }
 
-    res = await connection.execute<MySql.RowDataPacket[]>(
-      "SELECT * FROM poitem WHERE poid = ?",
-      [poid]
-    );
+    let valueSql = "SELECT * FROM poitem WHERE poid = ?";
+    let totalSql = "SELECT COUNT(id) as total FROM poitem WHERE poid = ?";
 
-    const rows = res[0];
+    valueSql = appendPagingSql(valueSql, params);
 
-    Log.writeInfo("DB poitems: ", Object.assign({ data: rows }, log));
+    Log.writeInfo("DB will get poitems: ", Object.assign({ data: { valueSql, totalSql } }, log));
 
-    return rows as POItem[];
+    const res = await Promise.all([
+      connection.execute<MySql.RowDataPacket[]>(valueSql, [poid]),
+      connection.execute<MySql.RowDataPacket[]>(totalSql, [poid]),
+    ]);
+
+    const result = {
+      total: res[1][0][0]["total"],
+      value: res[0][0],
+    };
+
+    Log.writeInfo("DB got poitems: ", Object.assign({ data: result }, log));
+
+    return result;
   }, log);
 };
 
@@ -100,13 +116,18 @@ export const updateById = async (
       modifiedby: item.modifiedby,
     };
 
-    const res = await connection.execute<MySql.ResultSetHeader>(
-      "UPDATE poitem SET poid = ?, partid = ?, count = ?, modified = ?, modifiedby = ? WHERE id = ?",
-      [obj.poid, obj.partid, obj.count, obj.modified, obj.modifiedby, id]
-    );
+    const sql = "UPDATE poitem SET poid = ?, partid = ?, count = ?, modified = ?, modifiedby = ? WHERE id = ?";
+    const params = [obj.poid, obj.partid, obj.count, obj.modified, obj.modifiedby, id];
+
+    Log.writeInfo("DB will update poitem: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    const res = await connection.execute<MySql.ResultSetHeader>(sql, params);
 
     if (res[0].affectedRows === 0) {
-      throw { kind: "not_found", message: `The poitem with id ${id} was not found.` };
+      throw {
+        kind: "not_found",
+        message: `The poitem with id ${id} was not found.`,
+      };
     } else {
       Log.writeInfo("DB updated poitem: ", Object.assign({ data: obj }, log));
 
@@ -117,13 +138,18 @@ export const updateById = async (
 
 export const remove = async (id: string, log: Log.Context) => {
   return await execute(async (connection) => {
-    const res = await connection.execute<MySql.ResultSetHeader>(
-      "DELETE FROM poitem WHERE id = ?",
-      [id]
-    );
+    const sql = "DELETE FROM poitem WHERE id = ?";
+    const params = [id];
+
+    Log.writeInfo("DB will delete poitem: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    const res = await connection.execute<MySql.ResultSetHeader>(sql, [id]);
 
     if (res[0].affectedRows == 0) {
-      throw { kind: "not_found", message: `The poitem with id ${id} was not found.` };
+      throw {
+        kind: "not_found",
+        message: `The poitem with id ${id} was not found.`,
+      };
     } else {
       Log.writeInfo(`DB deleted poitem with id: ${id}`, log);
     }

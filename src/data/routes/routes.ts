@@ -8,18 +8,56 @@ export const getUserName = (req: Request) => req.headers.authorization || "";
 
 export type Create = () => Promise<any>;
 export type Get = () => Promise<any>;
-export type List = () => Promise<any[]>;
+export type List = () => Promise<{ total: number; value: any[] }>;
 export type Update = () => Promise<any>;
 export type Remove = () => Promise<void>;
-export type Validate = () => Promise<string[]> | string[];
+export type Validate = () => Promise<string | string[] | null | undefined> | string | string[] | null | undefined;
 
-export const post = async (
-  req: Request,
-  res: Response,
-  create: Create,
-  log: Log.Context,
-  validate?: Validate
-) => {
+export interface Query {
+  apiVersion?: string;
+}
+
+export interface Params {}
+
+export interface PostParams extends Params {}
+
+export interface PostQuery extends Query {}
+
+export interface GetParams extends Params {
+  id: string;
+}
+
+export interface GetQuery extends Query {}
+
+export interface ListParams extends Params {}
+
+export interface ListQuery extends Query {
+  start?: string;
+  end?: string;
+  size?: string;
+}
+
+export interface PutParams extends Params {
+  id: string;
+}
+
+export interface PutQuery extends Query {}
+
+export interface DeleteParams extends Params {
+  id: string;
+}
+
+export interface DeleteQuery extends Query {}
+
+export type PostRequest = Request<Readonly<PostParams>, any, any, Readonly<PostQuery>>;
+export type GetRequest = Request<Readonly<GetParams>, any, any, Readonly<GetQuery>>;
+export type ListRequest = Request<Readonly<ListParams>, any, any, Readonly<ListQuery>>;
+export type PutRequest = Request<Readonly<PutParams>, any, any, Readonly<PutQuery>>;
+export type DeleteRequest = Request<Readonly<DeleteParams>, any, any, Readonly<DeleteQuery>>;
+
+export type DataRequest = PostRequest | GetRequest | ListRequest | PutRequest | DeleteRequest;
+
+export const post = async (req: PostRequest, res: Response, create: Create, log: Log.Context, validate?: Validate) => {
   const ctx = createRequestContext(req, log);
   Log.writeInfo(`Begin post.`, ctx);
 
@@ -27,7 +65,7 @@ export const post = async (
   let code: number;
 
   try {
-    const error = await validateCore(req, ctx, validate);
+    const error = await validateCore(req, ctx, [validate]);
 
     if (error) {
       code = 400;
@@ -52,13 +90,7 @@ export const post = async (
   }
 };
 
-export const get = async (
-  req: Request<Readonly<{ id: string }>>,
-  res: Response,
-  get: Get,
-  log: Log.Context,
-  validate?: Validate
-) => {
+export const get = async (req: GetRequest, res: Response, get: Get, log: Log.Context, validate?: Validate) => {
   const ctx = createRequestContext(req, log);
   Log.writeInfo(`Begin get.`, ctx);
 
@@ -66,7 +98,14 @@ export const get = async (
   let code: number;
 
   try {
-    const error = await validateCore(req, ctx, validate);
+    const error = await validateCore(req, ctx, [
+      validate,
+      () => {
+        if (!req.params.id) {
+          return "The parameter 'id' is required.";
+        }
+      },
+    ]);
 
     if (error) {
       code = 400;
@@ -91,13 +130,7 @@ export const get = async (
   }
 };
 
-export const list = async (
-  req: Request,
-  res: Response,
-  list: List,
-  log: Log.Context,
-  validate?: Validate
-) => {
+export const list = async (req: ListRequest, res: Response, list: List, log: Log.Context, validate?: Validate) => {
   const ctx = createRequestContext(req, log);
   Log.writeInfo(`Begin list.`, ctx);
 
@@ -105,7 +138,54 @@ export const list = async (
   let code: number;
 
   try {
-    const error = await validateCore(req, ctx, validate);
+    const error = await validateCore(req, ctx, [
+      validate,
+      () => {
+        if (!checkIfInteger(req.query.start)) {
+          return "The query 'start' is not a valid integer.";
+        }
+
+        if (req.query.end !== undefined && req.query.size !== undefined) {
+          return "You can only use one of the query 'end' or 'size', but not both.";
+        }
+
+        if (!checkIfInteger(req.query.end)) {
+          return "The query 'end' is not a valid integer.";
+        }
+
+        if (!checkIfInteger(req.query.size)) {
+          return "The query 'size' is not a valid integer.";
+        }
+
+        let start = req.query.start === undefined ? 0 : parseInt(req.query.start);
+
+        if (start < 0) {
+          return "The parameter 'start' must be greater than or equal to zero.";
+        }
+
+        let end: number;
+
+        if (req.query.end === undefined) {
+          if (req.query.size === undefined) {
+            end = start + 99;
+          } else {
+            end = start + parseInt(req.query.size) - 1;
+          }
+        } else {
+          end = parseInt(req.query.end);
+        }
+
+        if (end < start) {
+          return "The parameter 'end' cannot be less than 'start'.";
+        }
+
+        const size = end - start + 1;
+
+        if (size > 100) {
+          return "The size cannot be greater than 100.";
+        }
+      },
+    ]);
 
     if (error) {
       code = 400;
@@ -114,9 +194,6 @@ export const list = async (
       code = 200;
       data = await list();
       removeNull(data);
-      data = {
-        value: data,
-      };
     }
   } catch (err) {
     code = handleError(err);
@@ -133,13 +210,7 @@ export const list = async (
   }
 };
 
-export const put = async (
-  req: Request<Readonly<{ id: string }>>,
-  res: Response,
-  update: Update,
-  log: Log.Context,
-  validate?: Validate
-) => {
+export const put = async (req: PutRequest, res: Response, update: Update, log: Log.Context, validate?: Validate) => {
   const ctx = createRequestContext(req, log);
   Log.writeInfo(`Begin put.`, ctx);
 
@@ -147,7 +218,14 @@ export const put = async (
   let code: number;
 
   try {
-    const error = await validateCore(req, ctx, validate);
+    const error = await validateCore(req, ctx, [
+      validate,
+      () => {
+        if (!req.params.id) {
+          return "The parameter 'id' is required.";
+        }
+      },
+    ]);
 
     if (error) {
       code = 400;
@@ -173,7 +251,7 @@ export const put = async (
 };
 
 export const remove = async (
-  req: Request<Readonly<{ id: string }>>,
+  req: DeleteRequest,
   res: Response,
   remove: Remove,
   log: Log.Context,
@@ -186,7 +264,14 @@ export const remove = async (
   let code: number;
 
   try {
-    const error = await validateCore(req, ctx, validate);
+    const error = await validateCore(req, ctx, [
+      validate,
+      () => {
+        if (!req.params.id) {
+          return "The parameter 'id' is required.";
+        }
+      },
+    ]);
 
     if (error) {
       code = 400;
@@ -211,9 +296,9 @@ export const remove = async (
 };
 
 const validateCore = async (
-  req: Request,
+  req: DataRequest,
   ctx: RouteRequestContext,
-  validate?: Validate,
+  validators: Validate[],
   options?: Readonly<{ validateBody: boolean }>
 ) => {
   try {
@@ -233,21 +318,40 @@ const validateCore = async (
       }
     }
 
-    if (!body && validate) {
-      let errors: string[];
+    if (!body && validators.length) {
+      for (let i = 0; i < validators.length; ++i) {
+        const validate = validators[i];
 
-      const validation = validate();
+        //// The validator array item may be null or undefined
+        if (validate) {
+          let errors: string[];
 
-      if (isPromise(validation)) {
-        errors = await validation;
-      } else {
-        errors = validation;
-      }
+          const v = validate();
 
-      if (errors?.length > 0) {
-        body = {
-          message: errors[0],
-        };
+          if (isPromise(v)) {
+            const r = await v;
+            if (typeof r === "string") {
+              errors = [r];
+            } else {
+              errors = r;
+            }
+          } else {
+            if (typeof v === "string") {
+              errors = [v];
+            } else {
+              errors = v;
+            }
+          }
+
+          if (errors?.length > 0) {
+            body = {
+              message: errors[0],
+            };
+
+            //// We only need the first error, so stop loop for performance.
+            break;
+          }
+        }
       }
     }
 
@@ -283,7 +387,7 @@ const handleError = (err: Db.DbError) => {
   }
 };
 
-const createRequestContext = (req: Request, log: Log.Context) => {
+const createRequestContext = (req: DataRequest, log: Log.Context) => {
   const headers = Object.assign({}, req.headers);
   delete headers.authorization;
 
@@ -298,12 +402,7 @@ const createRequestContext = (req: Request, log: Log.Context) => {
   return ctx;
 };
 
-const createResponseContext = (
-  res: Response,
-  log: Log.Context,
-  code: number,
-  body?: any
-) => {
+const createResponseContext = (res: Response, log: Log.Context, code: number, body?: any) => {
   const headers = Object.assign({}, res.getHeaders());
   delete headers.authorization;
 
@@ -315,6 +414,10 @@ const createResponseContext = (
   };
 
   return ctx;
+};
+
+const checkIfInteger = (value?: string) => {
+  return value === undefined || Number.isInteger(Number(value));
 };
 
 interface RouteRequestContext extends Log.Context {

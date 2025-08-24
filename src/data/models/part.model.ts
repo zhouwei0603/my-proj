@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import * as MySql from "mysql2";
 import * as Log from "../log/log";
-import { execute } from "./db";
+import { appendPagingSql, execute, GetAllParams } from "./db";
 
 export interface Part {
   id: string;
@@ -15,10 +15,12 @@ export const create = async (part: Omit<Part, "id">, log: Log.Context) => {
       name: part.name,
     };
 
-    await connection.execute("INSERT INTO part SET id = ?, name = ?", [
-      obj.id,
-      obj.name,
-    ]);
+    const sql = "INSERT INTO part SET id = ?, name = ?";
+    const params = [obj.id, obj.name];
+
+    Log.writeInfo("DB will create part: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    await connection.execute(sql, params);
 
     Log.writeInfo("DB created part: ", Object.assign({ data: obj }, log));
 
@@ -28,10 +30,12 @@ export const create = async (part: Omit<Part, "id">, log: Log.Context) => {
 
 export const findById = async (id: string, log: Log.Context) => {
   return await execute(async (connection) => {
-    const res = await connection.execute<MySql.RowDataPacket[]>(
-      `SELECT * FROM part WHERE id = ?`,
-      [id]
-    );
+    const sql = `SELECT * FROM part WHERE id = ?`;
+    const params = [id];
+
+    Log.writeInfo("DB will find part: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    const res = await connection.execute<MySql.RowDataPacket[]>(sql, params);
 
     const rows = res[0];
 
@@ -42,45 +46,63 @@ export const findById = async (id: string, log: Log.Context) => {
 
       return obj;
     } else {
-      throw { kind: "not_found", message: `The part with id ${id} was not found.` };
+      throw {
+        kind: "not_found",
+        message: `The part with id ${id} was not found.`,
+      };
     }
   }, log);
 };
 
-export const getAll = async (name: string, log: Log.Context) => {
+export const getAll = async (name: string, params: GetAllParams, log: Log.Context) => {
   return await execute(async (connection) => {
-    let query = "SELECT * FROM part";
+    let valueSql = "SELECT * FROM part";
+    let totalSql = "SELECT COUNT(id) as total FROM part";
 
     if (name) {
-      query += ` WHERE name LIKE '%${name}%'`;
+      const where = ` WHERE name LIKE '%${name}%'`;
+      valueSql += where;
+      totalSql += where;
     }
 
-    const res = await connection.execute<MySql.RowDataPacket[]>(query);
-    const rows = res[0];
+    valueSql = appendPagingSql(valueSql, params);
 
-    Log.writeInfo("DB parts: ", Object.assign({ data: rows }, log));
+    Log.writeInfo("DB will get parts: ", Object.assign({ data: { valueSql, totalSql } }, log));
 
-    return rows as Part[];
+    const res = await Promise.all([
+      connection.execute<MySql.RowDataPacket[]>(valueSql),
+      connection.execute<MySql.RowDataPacket[]>(totalSql),
+    ]);
+
+    const result = {
+      total: res[1][0][0]["total"],
+      value: res[0][0],
+    };
+
+    Log.writeInfo("DB got parts: ", Object.assign({ data: result }, log));
+
+    return result;
   }, log);
 };
 
-export const updateById = async (
-  id: string,
-  part: Omit<Part, "id">,
-  log: Log.Context
-) => {
+export const updateById = async (id: string, part: Omit<Part, "id">, log: Log.Context) => {
   return await execute(async (connection) => {
     const obj: Omit<Part, "id"> = {
       name: part.name,
     };
 
-    const res = await connection.execute<MySql.ResultSetHeader>(
-      "UPDATE part SET name = ? WHERE id = ?",
-      [obj.name, id]
-    );
+    const sql = "UPDATE part SET name = ? WHERE id = ?";
+    const params = [obj.name, id];
+
+    Log.writeInfo("DB will update part: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    const res = await connection.execute<MySql.ResultSetHeader>(sql, params);
 
     if (res[0].affectedRows === 0) {
-      throw { kind: "not_found", message: `The part with id ${id} was not found.` };
+      throw {
+        kind: "not_found",
+        message: `The part with id ${id} was not found.`,
+      };
     } else {
       Log.writeInfo("DB updated part: ", Object.assign({ data: obj }, log));
 
@@ -91,13 +113,18 @@ export const updateById = async (
 
 export const remove = async (id: string, log: Log.Context) => {
   return await execute(async (connection) => {
-    const res = await connection.execute<MySql.ResultSetHeader>(
-      "DELETE FROM part WHERE id = ?",
-      [id]
-    );
+    const sql = "DELETE FROM part WHERE id = ?";
+    const params = [id];
+
+    Log.writeInfo("DB will delete part: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
+
+    const res = await connection.execute<MySql.ResultSetHeader>(sql, params);
 
     if (res[0].affectedRows == 0) {
-      throw { kind: "not_found", message: `The part with id ${id} was not found.` };
+      throw {
+        kind: "not_found",
+        message: `The part with id ${id} was not found.`,
+      };
     } else {
       Log.writeInfo(`DB deleted part with id: ${id}`, log);
     }

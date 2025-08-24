@@ -27,7 +27,7 @@ export const initialize = (app: Express) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
     const handler: Parameters<typeof Routes.list>[2] = () => {
-      return POItem.getAll(req.query.poid as string, log);
+      return POItem.getAll(req.query.poid as string, req.query, log);
     };
 
     return Routes.list(req, res, handler, log);
