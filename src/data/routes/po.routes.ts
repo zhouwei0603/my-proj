@@ -26,7 +26,7 @@ export const initialize = (app: Express) => {
 
     const handler: Parameters<typeof Routes.list>[2] = () => {
       const title = req.query.title as string;
-      return PO.getAll(title, req.query, log);
+      return PO.getAll(title, Routes.convertListQueryToDbParams(req.query), log);
     };
 
     return Routes.list(req, res, handler, log);

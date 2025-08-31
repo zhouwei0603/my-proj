@@ -142,5 +142,8 @@ vite.config.ts.timestamp-*
 *.js
 
 # Visual Studio and VS Code
-.vs
-.vscode
+.vs/
+.vscode/
+
+# Python
+__pycache__/

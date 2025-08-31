@@ -35,8 +35,9 @@ export const execute = async <T>(action: (connection: MySql.PoolConnection) => P
 };
 
 export const appendPagingSql = (sql: string, params: GetAllParams) => {
+  console.log(`DEUBG: ${JSON.stringify(params)}`);
   let start = params.start || 0;
-  let end = params.end || 99;
+  let end: number;
 
   if (typeof params.end === "undefined") {
     if (typeof params.size === "undefined") {

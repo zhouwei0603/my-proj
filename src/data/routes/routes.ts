@@ -295,6 +295,16 @@ export const remove = async (
   }
 };
 
+export const convertListQueryToDbParams = (query: ListQuery): Db.GetAllParams => {
+  const params: Db.GetAllParams = {
+    end: typeof query.end === "undefined" ? undefined : parseInt(query.end),
+    size: typeof query.size === "undefined" ? undefined : parseInt(query.size),
+    start: typeof query.start === "undefined" ? undefined : parseInt(query.start),
+  };
+
+  return params;
+}
+
 const validateCore = async (
   req: DataRequest,
   ctx: RouteRequestContext,

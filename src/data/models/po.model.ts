@@ -36,7 +36,7 @@ export const create = async (po: Omit<PO, "id" | "created" | "modified" | "modif
 
 export const findById = async (id: string, log: Log.Context) => {
   return await execute(async (connection) => {
-    const sql = `SELECT * FROM part WHERE id = ?`;
+    const sql = `SELECT * FROM po WHERE id = ?`;
     const params = [id];
 
     Log.writeInfo("DB will find po: ", Object.assign({ data: { SQL: sql, Params: params } }, log));
