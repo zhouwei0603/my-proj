@@ -14,11 +14,11 @@ const init: (typeof props)["init"] = props.init || (() => Promise.resolve());
   <transition mode="out-in">
     <suspense>
       <!-- main content -->
-      <div class="content">
-        <h1>
+      <div class="container">
+        <h1 class="header">
           <el-text size="large">{{ props.title }}</el-text>
         </h1>
-        <view-page-internal :init="init">
+        <view-page-internal :init="init" class="content">
           <div>
             <slot name="default"></slot>
           </div>
@@ -34,12 +34,19 @@ const init: (typeof props)["init"] = props.init || (() => Promise.resolve());
 </template>
 
 <style scoped>
-.content {
+.container {
   padding: 10px 20px 20px 20px;
+  height: calc(100vh - 110px);
 }
 
-.content h1 {
+.container .header {
   margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.container .content,
+.container .content > div {
+  height: calc(100vh - 160px);
 }
 
 .loading {

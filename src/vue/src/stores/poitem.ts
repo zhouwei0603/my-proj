@@ -6,7 +6,7 @@ export function get(id: string) {
 }
 
 export function list() {
-  return core.list<POItem>(`/poitems`);
+  return core.list<POItem>(`/poitems`).then(res => res.value || []);
 }
 
 export function create(

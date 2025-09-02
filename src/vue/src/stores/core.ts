@@ -14,10 +14,10 @@ export async function get<T>(relativeUrl: string) {
 
 export async function list<T>(relativeUrl: string) {
   return execute(async () => {
-    const { data } = await getInstance(relativeUrl).get<{ value: T[] }>(
+    const { data } = await getInstance(relativeUrl).get<ListResponse<T>>(
       relativeUrl
     );
-    return data.value || [];
+    return data;
   });
 }
 
@@ -58,6 +58,11 @@ export async function remove(relativeUrl: string) {
 }
 
 export type Error = Pick<AxiosError, "code" | "status" | "message">;
+
+export interface ListResponse<T> {
+  total: number;
+  value: T[];
+}
 
 function getInstance(relativeUrl: string, content?: any) {
   if (_.isNil(content)) {

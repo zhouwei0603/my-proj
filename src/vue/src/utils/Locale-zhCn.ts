@@ -23,7 +23,7 @@ export const strings: Strings = {
       title: "通知",
       remove: "清除",
       removeAllButton: "清除所有",
-      emptyDescription: "没有通知"
+      emptyDescription: "没有通知",
     },
     commands: {
       save: "保存",
@@ -34,7 +34,7 @@ export const strings: Strings = {
       second: "小于1分钟之前",
       minute: "${value}分钟之前",
       hour: "${value}小时之前",
-      day: "${value}天之前"
+      day: "${value}天之前",
     },
     views: {
       part: {
@@ -49,6 +49,14 @@ export const strings: Strings = {
         create: "添加新采购订单",
         update: "编辑采购订单",
       },
-    }
+    },
+  },
+  part: {
+    name: "名称",
+  },
+  views: {
+    part: {
+      searchByName: "按名称搜索",
+    },
   },
 } as const;

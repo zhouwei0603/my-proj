@@ -31,3 +31,41 @@ npm run dev
 ```sh
 npm run build
 ```
+
+# Data generator
+
+- Check the safe update configuration
+``` sql
+SHOW VARIABLES LIKE 'SQL_SAFE_UPDATES';
+```
+- Change safe update configuration
+``` sql
+SET SQL_SAFE_UPDATES = 0;
+```
+- Run command
+``` sh
+python3 po_creator.py
+python3 part_creator.py
+```
+- Create launch.json
+``` json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: PO data generator script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "C:\\Users\\周巍\\repos\\my-proj\\src\\data.utils\\datagen\\po_creator.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python Debugger: Part data generator script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "C:\\Users\\周巍\\repos\\my-proj\\src\\data.utils\\datagen\\part_creator.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}
+```

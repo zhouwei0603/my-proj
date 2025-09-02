@@ -51,4 +51,12 @@ export const strings: Strings = {
       },
     }
   },
+  part: {
+    name: "Name",
+  },
+  views: {
+    part: {
+      searchByName: "Search by name",
+    },
+  },
 } as const;
