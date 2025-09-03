@@ -36,7 +36,7 @@ export interface POItem {
   partid: string;
   count: number;
   created: string;
-  createdby: string;
+  createdBy: string;
   modified?: string;
-  modifiedby?: string;
+  modifiedBy?: string;
 }

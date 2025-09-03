@@ -7,6 +7,7 @@ import {
   NotificationState,
   type Options,
 } from "./NotificationCore";
+import { format } from "./String";
 
 export function removeAll(plugin: AppPlugin): void {
   plugin.notifications.clear();
@@ -76,21 +77,19 @@ class NotificationImpl implements Notification {
       return this._options.failureMessage;
     }
 
-    const compiled = _.template(this._options.failureMessage);
-
     if (_.isString(error)) {
-      return compiled({ msg: error });
+      return format(this._options.failureMessage, { msg: error });
     }
 
     if (error.message) {
-      return compiled({ msg: error.message });
+      return format(this._options.failureMessage, { msg: error.message });
     }
 
     if (_.isFunction(error.toString)) {
-      return compiled({ msg: error.toString() });
+      return format(this._options.failureMessage, { msg: error.toString() });
     }
 
-    return compiled({ msg: error });
+    return format(this._options.failureMessage, { msg: error });
   }
 
   private _showPopup(

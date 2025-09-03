@@ -25,6 +25,14 @@ export type Strings = DeepReadonly<{
       removeAllButton: string;
       emptyDescription: string;
     };
+    common: {
+      loading: string;
+      noData: string;
+      error: string;
+      yes: string;
+      no: string;
+      ok: string;
+    },
     commands: {
       save: string;
       close: string;
@@ -54,9 +62,42 @@ export type Strings = DeepReadonly<{
   part: {
     name: string;
   };
+  po: {
+    title: string;
+  };
   views: {
+    created: string;
+    modified: string;
+    createdBy: string;
+    modifiedBy: string;
+    refresh: string;
+    deleteErrorTitle: string;
+    deleteSuccessTitle: string;
+    deleteInProgressTitle: string;
+    updateErrorTitle: string;
+    updateSuccessTitle: string;
+    updateInProgressTitle: string;
+    createErrorTitle: string;
+    createSuccessTitle: string;
+    createInProgressTitle: string;
     part: {
       searchByName: string;
+    };
+    po: {
+      searchByTitle: string;
+      create: string;
+      update: string;
+      delete: string;
+      confirmDelete: string;
+      deleteErrorMessage: string;
+      deleteSuccessMessage: string;
+      deleteInProgressMessage: string;
+      updateErrorMessage: string;
+      updateSuccessMessage: string;
+      updateInProgressMessage: string;
+      createErrorMessage: string;
+      createSuccessMessage: string;
+      createInProgressMessage: string;
     };
   };
 }>;

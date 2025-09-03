@@ -3,8 +3,6 @@ import * as _ from "lodash";
 
 const dataEndpoint: string = import.meta.env.VITE_DATA_PARTY_ENDPOINT;
 
-console.log(`Data endpoint: ${dataEndpoint}`);
-
 export async function get<T>(relativeUrl: string) {
   return execute(async () => {
     const { data } = await getInstance(relativeUrl).get<T>(relativeUrl);
@@ -87,9 +85,11 @@ const withoutContentInstance = axios.create({
   },
 });
 
-function execute<T>(action: () => Promise<T>) {
+async function execute<T>(action: () => Promise<T>) {
   try {
-    return action();
+    // TODO: remove the delay in production
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    return await action();
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const data = {
