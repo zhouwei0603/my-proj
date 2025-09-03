@@ -5,6 +5,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import ProfilePicture from "../components/ProfilePicture.vue";
 import SearchBox from "../components/SearchBox.vue";
+import TableDateColumn from "../components/TableDateColumn.vue";
 import ViewPage from "../components/ViewPage.vue";
 import * as PO from "../stores/po";
 import { getAppPlugin } from "../utils/AppUtils";
@@ -143,7 +144,7 @@ const list = async (title: string, page: number) => {
           </el-table-column>
           <el-table-column :label="strings.views.created">
             <template #default="scope">
-              {{ new Date(scope.row.created).toLocaleString() }}
+              <table-date-column :date="scope.row.created" />
             </template>
           </el-table-column>
           <el-table-column :label="strings.views.createdBy">
@@ -153,7 +154,7 @@ const list = async (title: string, page: number) => {
           </el-table-column>
           <el-table-column :label="strings.views.modified">
             <template #default="scope">
-              {{ scope.row.modified ? new Date(scope.row.modified).toLocaleString() : "-" }}
+              <table-date-column :date="scope.row.modified" />
             </template>
           </el-table-column>
           <el-table-column :label="strings.views.modifiedBy">
