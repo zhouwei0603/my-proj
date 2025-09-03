@@ -1,5 +1,5 @@
 import * as core from "./core";
-import * as _ from "lodash";
+import _ from "lodash";
 
 export function get(id: string) {
   return core.get<POItem>(`/poitems/${id}`);

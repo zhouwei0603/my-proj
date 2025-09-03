@@ -1,7 +1,7 @@
 import * as core from "./core";
-import * as _ from "lodash";
+import _ from "lodash";
 
-export async function get(id: string) {
+export async function get(id: string): Promise<PO> {
   const response = await core.get<DBPO>(`/pos/${id}`);
   return {
     ...response,
@@ -35,7 +35,7 @@ export async function list(
 
   return {
     total: response.total,
-    value: response.value.map(item => ({
+    value: response.value.map((item) => ({
       ...item,
       createdBy: item.createdby,
       modifiedBy: item.modifiedby,
@@ -43,18 +43,22 @@ export async function list(
   };
 }
 
-export function create(content: Readonly<Omit<PO, "id" | "created" | "createdBy" | "modified" | "modifiedBy">>) {
-  return core.post<PO>(`/pos`, content);
+export async function create(
+  content: Readonly<Omit<PO, "id" | "created" | "createdBy" | "modified" | "modifiedBy">>
+): Promise<PO> {
+  const db = await core.post<DBPO>(`/pos`, content);
+  return { ...db, createdBy: db.createdby, modifiedBy: db.modifiedby };
 }
 
-export function update(
+export async function update(
   id: string,
   content: Readonly<Omit<PO, "id" | "created" | "createdBy" | "modified" | "modifiedBy">>
-) {
-  return core.put<PO>(`/pos/${id}`, content);
+): Promise<PO> {
+  const db = await core.put<DBPO>(`/pos/${id}`, content);
+  return { ...db, createdBy: db.createdby, modifiedBy: db.modifiedby };
 }
 
-export function remove(id: string) {
+export function remove(id: string): Promise<void> {
   return core.remove(`/pos/${id}`);
 }
 

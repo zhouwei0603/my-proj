@@ -12,3 +12,20 @@ body {
 #app {
   margin: 0 auto;
 }
+
+a.router-link:link,
+a.router-link:hover,
+a.router-link:active,
+a.router-link:visited {
+  color: var(--el-color-primary);
+}
+
+a.router-link:link,
+a.router-link:active,
+a.router-link:visited {
+  text-decoration: none;
+}
+
+a.router-link:hover {
+  text-decoration: underline;
+}

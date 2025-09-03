@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ElButton, ElCol, ElContainer, ElFooter, ElHeader, ElMain, ElMessageBox, ElPagination, ElRow, ElTable, ElTableColumn } from "element-plus";
-import * as _ from "lodash";
+import _ from "lodash";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import ProfilePicture from "../components/ProfilePicture.vue";
 import SearchBox from "../components/SearchBox.vue";
 import ViewPage from "../components/ViewPage.vue";
@@ -12,6 +13,8 @@ import { format } from "../utils/String";
 
 const plugin = getAppPlugin();
 const strings = plugin.strings;
+
+const router = useRouter();
 
 const pageSize = 20;
 
@@ -43,10 +46,12 @@ const onPageChange = async (page: number) => {
   await list(searchTitle.value, currentPage.value);
 };
 
-const create = async () => {
+const create = () => {
+  router.push("/po");
 };
 
-const update = async () => {
+const update = () => {
+  router.push(`/po/${selected.value[0].id}`);
 };
 
 const remove = async () => {
@@ -131,23 +136,27 @@ const list = async (title: string, page: number) => {
       <el-main>
         <el-table :data="pagePOs" row-key="id" @selection-change="onTableSelectionChange">
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="title" :label="strings.po.title" />
-          <el-table-column prop="created" :label="strings.views.created">
+          <el-table-column :label="strings.po.title">
+            <template #default="scope">
+              <router-link :to="`/po/${scope.row.id}`" class="router-link">{{ scope.row.title }}</router-link>
+            </template>
+          </el-table-column>
+          <el-table-column :label="strings.views.created">
             <template #default="scope">
               {{ new Date(scope.row.created).toLocaleString() }}
             </template>
           </el-table-column>
-          <el-table-column prop="createdBy" :label="strings.views.createdBy">
+          <el-table-column :label="strings.views.createdBy">
             <template #default="scope">
               <profile-picture :name="scope.row.createdBy" :show-name="true" />
             </template>
           </el-table-column>
-          <el-table-column prop="modified" :label="strings.views.modified">
+          <el-table-column :label="strings.views.modified">
             <template #default="scope">
               {{ scope.row.modified ? new Date(scope.row.modified).toLocaleString() : "-" }}
             </template>
           </el-table-column>
-          <el-table-column prop="modifiedBy" :label="strings.views.modifiedBy">
+          <el-table-column :label="strings.views.modifiedBy">
             <template #default="scope">
               <profile-picture :name="scope.row.modifiedBy" :show-name="true" />
             </template>

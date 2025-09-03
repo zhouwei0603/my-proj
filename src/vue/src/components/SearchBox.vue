@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue';
 import { ElInput } from 'element-plus';
-import * as _ from "lodash";
+import _ from "lodash";
 import { ref } from 'vue';
 
 const newProps = defineProps<{

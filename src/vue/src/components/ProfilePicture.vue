@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { UserFilled } from '@element-plus/icons-vue';
 import { ElAvatar } from 'element-plus';
-import * as _ from "lodash";
 import { ref } from 'vue';
 
 const props = defineProps<{

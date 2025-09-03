@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import * as _ from "lodash";
+import _ from "lodash";
 
 const dataEndpoint: string = import.meta.env.VITE_DATA_PARTY_ENDPOINT;
 

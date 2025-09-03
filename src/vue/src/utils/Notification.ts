@@ -1,5 +1,5 @@
 import { ElNotification, notificationTypes } from "element-plus";
-import * as _ from "lodash";
+import _ from "lodash";
 import { ref } from "vue";
 import { type AppPlugin } from "./AppContext";
 import {

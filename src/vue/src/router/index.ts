@@ -11,7 +11,12 @@ const router = createRouter({
     },
     {
       path: "/po",
-      name: "po",
+      name: "po-create",
+      component: () => import("../views/POView.vue"),
+    },
+    {
+      path: "/po/:id",
+      name: "po-update",
       component: () => import("../views/POView.vue"),
     },
     {
@@ -23,11 +28,6 @@ const router = createRouter({
       path: "/poitem",
       name: "poitem",
       component: () => import("../views/POItemView.vue"),
-    },
-    {
-      path: "/part",
-      name: "part",
-      component: () => import("../views/PartView.vue"),
     },
     {
       path: "/partlist",

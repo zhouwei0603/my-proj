@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import { type AppPlugin } from "./AppContext";
 
 export function toDisplayString(plugin: AppPlugin, ms: number): string {
