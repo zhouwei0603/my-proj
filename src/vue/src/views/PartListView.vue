@@ -56,7 +56,7 @@ const list = async (name: string, page: number) => {
       </el-main>
 
       <el-footer>
-        <el-pagination layout="prev, pager, next" :total="listTotal" :current-page="listPage"
+        <el-pagination layout="prev, pager, next, total" :total="listTotal" :current-page="listPage"
           @update:current-page="onPageChange" :page-size="listSize" />
       </el-footer>
     </el-container>

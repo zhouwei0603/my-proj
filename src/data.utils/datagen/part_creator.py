@@ -5,18 +5,18 @@ from core import HEADERS, HOST, PORT, SCHEMA
 
 class PartCreator:
     _PREFIXES = {
-        12: "Twelve",
-        11: "Eleven",
-        10: "Ten",
-        9: "Nine",
-        8: "Eight",
-        7: "Seven",
-        6: "Six",
-        5: "Five",
-        4: "Four",
-        3: "Three",
+        1: "One",
         2: "Two",
-        1: "One"
+        3: "Three",
+        4: "Four",
+        5: "Five",
+        6: "Six",
+        7: "Seven",
+        8: "Eight",
+        9: "Nine",
+        10: "Ten",
+        11: "Eleven",
+        12: "Twelve",
     }
 
     def __init__(self, begin: int, end: int):
@@ -42,9 +42,9 @@ class PartCreator:
     def _create_data(self, index: int):
         fill = int(math.log10(self._end - self._begin + 1) + 1)
         name: str
-        for i in range(0, len(PartCreator._PREFIXES)):
-            if ((index % (i + 1)) == 0):
-                name = f"Python {PartCreator._PREFIXES[i + 1]} Part {str(index + 1).zfill(fill)}"
+        for i in range(len(PartCreator._PREFIXES), 0, -1):
+            if ((index % i) == 0):
+                name = f"Python {PartCreator._PREFIXES[i]} Part {str(index + 1).zfill(fill)}"
                 break
     
         return {

@@ -50,9 +50,9 @@ class POCreator:
     def _create_data(self, index: int):
         fill = int(math.log10(self._end - self._begin + 1) + 1)
         title: str
-        for i in range(0, len(POCreator._MONTHS)):
-            if ((index % (i + 1)) == 0):
-                title = f"Python {POCreator._MONTHS[i + 1]} PO title {str(index + 1).zfill(fill)}"
+        for i in range(len(POCreator._MONTHS), 0, -1):
+            if ((index % i) == 0):
+                title = f"Python {POCreator._MONTHS[i]} PO title {str(index + 1).zfill(fill)}"
                 break
 
         return {
