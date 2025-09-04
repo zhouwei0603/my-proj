@@ -12,8 +12,7 @@ import {
   ElScrollbar,
   ElSplitter,
   ElSplitterPanel,
-  ElSubMenu,
-  ElText
+  ElSubMenu
 } from 'element-plus';
 import en from 'element-plus/es/locale/lang/en';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
@@ -21,6 +20,7 @@ import { computed, ref } from 'vue';
 import { RouterView, useRoute } from 'vue-router';
 import AppNotifications from "./components/AppNotifications.vue";
 import AppSettings from "./components/AppSettings.vue";
+import UserProfile from "./components/UserProfile.vue";
 import { getAppPlugin } from "./utils/AppUtils";
 import { SupportedLanguages } from "./utils/LocaleCore";
 
@@ -57,7 +57,7 @@ const iconSize = 24;
           :title="strings.app.header.notification"></el-button>
         <el-button :type="''" :icon="Setting" link @click="settingsDrawer = true"
           :title="strings.app.header.settings"></el-button>
-        <el-text>Wei Zhou</el-text>
+        <user-profile :name="plugin.user.value.name" :show-name="true" />
       </el-header>
 
       <el-main class="app-main">

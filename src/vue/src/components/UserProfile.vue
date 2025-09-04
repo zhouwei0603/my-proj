@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { UserFilled } from '@element-plus/icons-vue';
 import { ElAvatar } from 'element-plus';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
   name?: string,
@@ -10,14 +10,18 @@ const props = defineProps<{
 
 const url = ref<string>();
 
-if (props.name) {
-  // TODO: fetch real profile picture URL by user name
-  if (props.name.toLowerCase().includes("python")) {
-    url.value = `https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg`
-  } else {
-    url.value = `https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png`;
+const load = async () => {
+  if (props.name) {
+    // TODO: fetch real profile picture URL by user name
+    if (props.name.toLowerCase().includes("python")) {
+      url.value = `https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg`
+    } else {
+      url.value = `https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png`;
+    }
   }
-}
+};
+
+watch(() => props.name, load, { immediate: true });
 </script>
 
 <template>
@@ -32,5 +36,6 @@ if (props.name) {
 <style scoped>
 .container {
   display: flex;
+  align-items: center;
 }
 </style>

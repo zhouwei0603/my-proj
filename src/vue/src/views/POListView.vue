@@ -3,7 +3,7 @@ import { ElButton, ElCol, ElContainer, ElFooter, ElHeader, ElMain, ElMessageBox,
 import _ from "lodash";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import ProfilePicture from "../components/ProfilePicture.vue";
+import UserProfile from "../components/UserProfile.vue";
 import SearchBox from "../components/SearchBox.vue";
 import TableDateColumn from "../components/TableDateColumn.vue";
 import ViewPage from "../components/ViewPage.vue";
@@ -149,7 +149,7 @@ const list = async (title: string, page: number) => {
           </el-table-column>
           <el-table-column :label="strings.views.createdBy">
             <template #default="scope">
-              <profile-picture :name="scope.row.createdBy" :show-name="true" />
+              <user-profile :name="scope.row.createdBy" :show-name="true" />
             </template>
           </el-table-column>
           <el-table-column :label="strings.views.modified">
@@ -159,7 +159,7 @@ const list = async (title: string, page: number) => {
           </el-table-column>
           <el-table-column :label="strings.views.modifiedBy">
             <template #default="scope">
-              <profile-picture :name="scope.row.modifiedBy" :show-name="true" />
+              <user-profile :name="scope.row.modifiedBy" :show-name="true" />
             </template>
           </el-table-column>
         </el-table>

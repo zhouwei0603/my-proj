@@ -21,6 +21,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SearchBox: typeof import('./src/components/SearchBox.vue')['default']
     TableDateColumn: typeof import('./src/components/TableDateColumn.vue')['default']
+    UserProfile: typeof import('./src/components/UserProfile.vue')['default']
     ViewError: typeof import('./src/components/ViewError.vue')['default']
     ViewLoading: typeof import('./src/components/ViewLoading.vue')['default']
     ViewPage: typeof import('./src/components/ViewPage.vue')['default']
