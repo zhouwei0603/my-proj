@@ -1,0 +1,32 @@
+@WebApi_HostAddress = https://localhost:7215
+
+GET {{WebApi_HostAddress}}/api/users
+
+###
+
+GET {{WebApi_HostAddress}}/api/users/{{id}}
+
+###
+
+POST {{WebApi_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  //User
+}
+
+###
+
+PUT {{WebApi_HostAddress}}/api/users/{{id}}
+Content-Type: application/json
+
+{
+  //User
+}
+
+###
+
+@id=string
+DELETE {{WebApi_HostAddress}}/api/users/{{id}}
+
+###

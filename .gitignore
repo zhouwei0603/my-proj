@@ -147,3 +147,18 @@ vite.config.ts.timestamp-*
 
 # Python
 __pycache__/
+
+# .NET Framework
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.cache
+*.dbmdl
+*.jfm
+*.pdb
+*.dll
+*.exe
+*.log
