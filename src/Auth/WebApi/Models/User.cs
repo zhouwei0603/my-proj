@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace MyProj.WebApi.Models
 {
@@ -10,6 +11,7 @@ namespace MyProj.WebApi.Models
         [Key]
         [Column("id")]
         [JsonPropertyName("id")]
+        [ValidateNever]
         public string Id { get; set; } = null!;
 
         [Column("name")]

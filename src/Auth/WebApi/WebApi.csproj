@@ -13,4 +13,8 @@
     <PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="MyProj.WebApi.Utilities" />
+  </ItemGroup>
+
 </Project>

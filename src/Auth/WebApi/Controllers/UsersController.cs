@@ -66,7 +66,7 @@ namespace MyProj.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(string id)
         {
-            var validationErrors = UserValidation.Validate(new User { Id = id }, HttpMethod.Get);
+            var validationErrors = await UserValidation.ValidateAsync(new User { Id = id }, HttpMethod.Get).ToListAsync();
             if (validationErrors.Any())
             {
                 return BadRequest(new ValidationProblemDetails
@@ -75,7 +75,6 @@ namespace MyProj.WebApi.Controllers
                     Errors = validationErrors.ToDictionary(e => "id", e => new[] { e })
                 });
             }
-
             using var context = new AuthContext();
             var user = await context.Users.FindAsync(id);
             if (user == null) return NotFound();
@@ -83,9 +82,9 @@ namespace MyProj.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser([FromBody] User User)
+        public async Task<ActionResult<User>> CreateUser([FromBody] User user)
         {
-            var validationErrors = UserValidation.Validate(User, HttpMethod.Post);
+            var validationErrors = await UserValidation.ValidateAsync(user, HttpMethod.Post).ToListAsync();
             if (validationErrors.Any())
             {
                 return BadRequest(new ValidationProblemDetails
@@ -95,17 +94,18 @@ namespace MyProj.WebApi.Controllers
                 });
             }
 
-            User.Id = Guid.NewGuid().ToString();
+            user.Id = Guid.NewGuid().ToString();
             using var context = new AuthContext();
-            context.Users.Add(User);
+            context.Users.Add(user);
             await context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetUser), new { id = User.Id }, User);
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] User updatedUser)
         {
-            var validationErrors = UserValidation.Validate(updatedUser, HttpMethod.Put);
+            updatedUser.Id = id;
+            var validationErrors = await UserValidation.ValidateAsync(updatedUser, HttpMethod.Put).ToListAsync();
             if (validationErrors.Any())
             {
                 return BadRequest(new ValidationProblemDetails
@@ -129,7 +129,7 @@ namespace MyProj.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var validationErrors = UserValidation.Validate(new User { Id = id }, HttpMethod.Delete);
+            var validationErrors = await UserValidation.ValidateAsync(new User { Id = id }, HttpMethod.Delete).ToListAsync();
             if (validationErrors.Any())
             {
                 return BadRequest(new ValidationProblemDetails

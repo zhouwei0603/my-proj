@@ -34,7 +34,7 @@ class UserCreator:
     def _create_core(self, index: int):
         user = self._create_data(index)
         try:
-            requests.post(f"{AUTH_SCHEMA}://{AUTH_HOST}:{AUTH_PORT}/api/users", json=user, headers=AUTH_HEADERS)
+            requests.post(f"{AUTH_SCHEMA}://{AUTH_HOST}:{AUTH_PORT}/api/users", json=user, headers=AUTH_HEADERS, verify=False)
         except Exception as e:
             print(f"User failed to create: {user}, Error: {e}")
             raise

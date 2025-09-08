@@ -4,7 +4,7 @@ GET {{WebApi_HostAddress}}/api/users
 
 ###
 
-GET {{WebApi_HostAddress}}/api/users/{{id}}
+GET {{WebApi_HostAddress}}/api/users/20b7fff6-5650-424a-8218-f82d7c6b7e44
 
 ###
 
@@ -12,20 +12,20 @@ POST {{WebApi_HostAddress}}/api/users
 Content-Type: application/json
 
 {
-  "name": "Wei Zhou",
-  "email": "weizhou@163.com",
-  "avatarUrl": "https://img.wxcha.com/m00/91/a9/b86f73a31ad5348906322e247fb1b836.jpg"
+  "name": "Shengshuai Zhou",
+  "email": "zss@qq.com",
+  "avatarUrl": "https://img.wxcha.com/m00/34/de/4cef0b011eb3386016b1f9c2e408bcc6.jpg?down"
 }
 
 ###
 
-PUT {{WebApi_HostAddress}}/api/users/{{id}}
+PUT {{WebApi_HostAddress}}/api/users/e93e1585-f2bc-46c1-b701-c62bcdf4a516
 Content-Type: application/json
 
 {
-  "name": "Wei Zhou",
-  "email": "weizhou@163.com",
-  "avatarUrl": "https://img.wxcha.com/m00/91/a9/b86f73a31ad5348906322e247fb1b836.jpg"
+  "name": "Shengshuai Zhou",
+  "email": "zss@qq.com",
+  "avatarUrl": "https://img.wxcha.com/m00/34/de/4cef0b011eb3386016b1f9c2e408bcc6.jpg"
 }
 
 ###
