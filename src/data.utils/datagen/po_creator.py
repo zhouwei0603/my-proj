@@ -1,7 +1,7 @@
 import math
 import requests
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
-from core import HEADERS, HOST, PORT, SCHEMA
+from core import DATA_HEADERS, DATA_HOST, DATA_PORT, DATA_SCHEMA
 from poitem_creator import POItemCreator
 
 class POCreator:
@@ -36,7 +36,7 @@ class POCreator:
     def _create_core(self, index: int):
         po = self._create_data(index)
         try:
-            response = requests.post(f"{SCHEMA}://{HOST}:{PORT}/api/pos", json=po, headers=HEADERS)
+            response = requests.post(f"{DATA_SCHEMA}://{DATA_HOST}:{DATA_PORT}/api/pos", json=po, headers=DATA_HEADERS)
             po_data = response.json()
 
             print(f"Created PO {po_data["id"]}")
@@ -84,7 +84,7 @@ def _get_part_ids() -> list[str]:
     return partids
 
 def _fill_part_ids(partids: list[str], start: int):
-    response = requests.get(f"{SCHEMA}://{HOST}:{PORT}/api/parts?start={start}&size={_PAGING_SIZE}", headers=HEADERS)
+    response = requests.get(f"{DATA_SCHEMA}://{DATA_HOST}:{DATA_PORT}/api/parts?start={start}&size={_PAGING_SIZE}", headers=DATA_HEADERS)
     json = response.json()
 
     parts = json["value"]

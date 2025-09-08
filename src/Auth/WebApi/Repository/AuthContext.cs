@@ -20,7 +20,7 @@ namespace MyProj.WebApi.Repository
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // TODO: Move connection string to configuration file
-            optionsBuilder.UseMySQL("server=localhost;port:3308;database=mytest;user=weizhou;password=Password01!");
+            optionsBuilder.UseMySQL("server=localhost;port=3308;database=mytest;user=weizhou;password=Password01!");
         }
     }
 }

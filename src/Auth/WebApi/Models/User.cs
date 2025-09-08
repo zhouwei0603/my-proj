@@ -1,13 +1,27 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
 namespace MyProj.WebApi.Models
 {
-    public class User
+    [Table("user")]
+    public record User
     {
+        [Key]
+        [Column("id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; } = null!;
 
+        [Column("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; } = null!;
 
-        public string? Email { get; set; }
+        [Column("email")]
+        [JsonPropertyName("email")]
+        public string Email { get; set; } = null!;
 
+        [Column("avatar_url")]
+        [JsonPropertyName("avatarUrl")]
         public string? AvatarUrl { get; set; }
     }
 }

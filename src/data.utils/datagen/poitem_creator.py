@@ -1,6 +1,6 @@
 import random
 import requests
-from core import HEADERS, HOST, PORT, SCHEMA
+from core import DATA_HEADERS, DATA_HOST, DATA_PORT, DATA_SCHEMA
 
 class POItemCreator:
     def __init__(self, poid: str, partids: list[str]):
@@ -26,7 +26,7 @@ class POItemCreator:
     def _create_core(self, index: int):
         poitem = self._create_data(index)
         try:
-            requests.post(f"{SCHEMA}://{HOST}:{PORT}/api/poitems", json=poitem, headers=HEADERS)
+            requests.post(f"{DATA_SCHEMA}://{DATA_HOST}:{DATA_PORT}/api/poitems", json=poitem, headers=DATA_HEADERS)
         except Exception as e:
             print(f"PO item failed to create: {poitem}, Error: {e}")
             raise

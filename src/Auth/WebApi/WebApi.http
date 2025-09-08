@@ -1,4 +1,4 @@
-@WebApi_HostAddress = https://localhost:7215
+@WebApi_HostAddress = http://localhost:5858
 
 GET {{WebApi_HostAddress}}/api/users
 
@@ -12,7 +12,9 @@ POST {{WebApi_HostAddress}}/api/users
 Content-Type: application/json
 
 {
-  //User
+  "name": "Wei Zhou",
+  "email": "weizhou@163.com",
+  "avatarUrl": "https://img.wxcha.com/m00/91/a9/b86f73a31ad5348906322e247fb1b836.jpg"
 }
 
 ###
@@ -21,7 +23,9 @@ PUT {{WebApi_HostAddress}}/api/users/{{id}}
 Content-Type: application/json
 
 {
-  //User
+  "name": "Wei Zhou",
+  "email": "weizhou@163.com",
+  "avatarUrl": "https://img.wxcha.com/m00/91/a9/b86f73a31ad5348906322e247fb1b836.jpg"
 }
 
 ###
