@@ -37,6 +37,24 @@ services:
     stdin_open: true
     tty: true
 
+  authapi:
+    build:
+      context: ./
+      dockerfile: authapi.local.Dockerfile
+    networks:
+      my-net:
+        aliases:
+          - my-proj-authapi
+    container_name: authapi
+    restart: unless-stopped
+    ports:
+      - 6666:6060
+    environment:
+      - ASPNETCORE_ENVIRONMENT=DevelopmentLocal
+      - ASPNETCORE_HTTP_PORTS=6666
+    stdin_open: true
+    tty: true
+
 networks:
   my-net:
     name: my-proj

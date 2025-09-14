@@ -12,9 +12,9 @@ POST {{WebApi_HostAddress}}/api/users
 Content-Type: application/json
 
 {
-  "name": "Shengshuai Zhou",
-  "email": "zss@qq.com",
-  "avatarUrl": "https://img.wxcha.com/m00/34/de/4cef0b011eb3386016b1f9c2e408bcc6.jpg?down"
+  "name": "Manual Test 20250914 01",
+  "email": "manual20250914-01@test.com",
+  "avatarUrl": "https://api.dicebear.com/9.x/initials/svg?seed=Alexander"
 }
 
 ###

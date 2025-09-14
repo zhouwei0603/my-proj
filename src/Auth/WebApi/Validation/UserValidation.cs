@@ -7,11 +7,11 @@ namespace MyProj.WebApi.Validation
 {
     public static class UserValidation
     {
-        public static async IAsyncEnumerable<string> ValidateAsync(User user, HttpMethod method)
+        public static async IAsyncEnumerable<string> ValidateAsync(User user, HttpMethod method, IDbContextFactory<AuthDbContext> factory)
         {
             if (method == HttpMethod.Get || method == HttpMethod.Delete)
             {
-                foreach (var error in ValidateId(user))
+                foreach (var error in ValidateId(user, factory))
                 {
                     yield return error;
                 }
@@ -20,7 +20,7 @@ namespace MyProj.WebApi.Validation
 
             if (method == HttpMethod.Post)
             {
-                await foreach (var error in ValidateForCreateAsync(user))
+                await foreach (var error in ValidateForCreateAsync(user, factory))
                 {
                     yield return error;
                 }
@@ -29,7 +29,7 @@ namespace MyProj.WebApi.Validation
 
             if (method == HttpMethod.Put || method == HttpMethod.Patch)
             {
-                await foreach (var error in ValidateForUpdateAsync(user))
+                await foreach (var error in ValidateForUpdateAsync(user, factory))
                 {
                     yield return error;
                 }
@@ -39,9 +39,9 @@ namespace MyProj.WebApi.Validation
             throw new NotSupportedException($"HTTP method {method} is not supported for user validation.");
         }
 
-        private static async IAsyncEnumerable<string> ValidateForUpdateAsync(User user)
+        private static async IAsyncEnumerable<string> ValidateForUpdateAsync(User user, IDbContextFactory<AuthDbContext> factory)
         {
-            using var context = new AuthContext();
+            using var context = factory.CreateDbContext();
             var queryable = context.Users.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(user.Name))
@@ -78,9 +78,9 @@ namespace MyProj.WebApi.Validation
             }
         }
 
-        private static async IAsyncEnumerable<string> ValidateForCreateAsync(User user)
+        private static async IAsyncEnumerable<string> ValidateForCreateAsync(User user, IDbContextFactory<AuthDbContext> factory)
         {
-            using var context = new AuthContext();
+            using var context = factory.CreateDbContext();
             var queryable = context.Users.AsQueryable();
 
             if (string.IsNullOrWhiteSpace(user.Name))
@@ -119,7 +119,7 @@ namespace MyProj.WebApi.Validation
             }
         }
 
-        private static IEnumerable<string> ValidateId(User user)
+        private static IEnumerable<string> ValidateId(User user, IDbContextFactory<AuthDbContext> factory)
         {
             if (string.IsNullOrWhiteSpace(user.Id))
             {
