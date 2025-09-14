@@ -55,6 +55,24 @@ services:
     stdin_open: true
     tty: true
 
+  authportal:
+    build:
+      context: ./
+      dockerfile: authportal.local.Dockerfile
+    networks:
+      my-net:
+        aliases:
+          - my-proj-authportal
+    container_name: authportal
+    restart: unless-stopped
+    ports:
+      - 5656:5050
+    environment:
+      - ASPNETCORE_ENVIRONMENT=DevelopmentLocal
+      - ASPNETCORE_HTTP_PORTS=5656
+    stdin_open: true
+    tty: true
+
 networks:
   my-net:
     name: my-proj

@@ -36,7 +36,7 @@ Run this command to build the image on your local machine and start the containe
 #### Production deployment
 *N/A*
 
-## Create Auth portal docker
+## Create Auth Web API docker
 
 ### Deploy to docker
 Run this command to build the image on your local machine and start the container. You only need to run this command the first time, and whenever you make changes to docker-compose.yml.
@@ -44,6 +44,18 @@ Run this command to build the image on your local machine and start the containe
 #### Local deployment
 - `docker compose -f docker-compose.local.yml up --build --no-recreate -d authapi`
 - `docker compose -f docker-compose.local.yml up --build --force-recreate -d authapi`
+
+#### Production deployment
+*N/A*
+
+## Create Auth portal docker
+
+### Deploy to docker
+Run this command to build the image on your local machine and start the container. You only need to run this command the first time, and whenever you make changes to docker-compose.yml.
+
+#### Local deployment
+- `docker compose -f docker-compose.local.yml up --build --no-recreate -d authportal`
+- `docker compose -f docker-compose.local.yml up --build --force-recreate -d authportal`
 
 #### Production deployment
 *N/A*
