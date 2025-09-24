@@ -57,6 +57,11 @@ export type DeleteRequest = Request<Readonly<DeleteParams>, any, any, Readonly<D
 
 export type DataRequest = PostRequest | GetRequest | ListRequest | PutRequest | DeleteRequest;
 
+export interface ListResponse<T = any> {
+  total: number;
+  value: T[];
+}
+
 export const post = async (req: PostRequest, res: Response, create: Create, log: Log.Context, validate?: Validate) => {
   const ctx = createRequestContext(req, log);
   Log.writeInfo(`Begin post.`, ctx);

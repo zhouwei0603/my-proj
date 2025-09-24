@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { Express, Router } from "express";
 import * as Log from "../log/log";
-import * as PO from "../models/po.model";
+import * as DBPO from "../models/po.model";
 import * as Routes from "./routes";
 
 export const initialize = (app: Express) => {
@@ -10,12 +10,13 @@ export const initialize = (app: Express) => {
   router.post("/", (req, res) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
-    const handler: Parameters<typeof Routes.post>[2] = () => {
-      const obj: Parameters<typeof PO.create>[0] = {
+    const handler: Parameters<typeof Routes.post>[2] = async () => {
+      const obj: Parameters<typeof DBPO.create>[0] = {
         title: req.body.title,
         createdby: Routes.getUserName(req),
       };
-      return PO.create(obj, log);
+      const response = await DBPO.create(obj, log);
+      return normalize(response);
     };
 
     return Routes.post(req, res, handler, log);
@@ -24,9 +25,16 @@ export const initialize = (app: Express) => {
   router.get("/", (req, res) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
-    const handler: Parameters<typeof Routes.list>[2] = () => {
+    const handler: Parameters<typeof Routes.list>[2] = async () => {
       const title = req.query.title as string;
-      return PO.getAll(title, Routes.convertListQueryToDbParams(req.query), log);
+      const response = await DBPO.getAll(title, Routes.convertListQueryToDbParams(req.query), log);
+      const data: Routes.ListResponse<PO> = {
+        total: response.total,
+        value: response.value.map((r) => {
+          return normalize(r as any);
+        }),
+      };
+      return data;
     };
 
     return Routes.list(req, res, handler, log);
@@ -35,8 +43,9 @@ export const initialize = (app: Express) => {
   router.get("/:id", (req, res) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
-    const handler: Parameters<typeof Routes.get>[2] = () => {
-      return PO.findById(req.params.id, log);
+    const handler: Parameters<typeof Routes.get>[2] = async () => {
+      const response = await DBPO.findById(req.params.id, log);
+      return normalize(response);
     };
 
     return Routes.get(req, res, handler, log);
@@ -45,12 +54,13 @@ export const initialize = (app: Express) => {
   router.put("/:id", (req, res) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
-    const handler: Parameters<typeof Routes.put>[2] = () => {
-      const obj: Parameters<typeof PO.updateById>[1] = {
+    const handler: Parameters<typeof Routes.put>[2] = async () => {
+      const obj: Parameters<typeof DBPO.updateById>[1] = {
         title: req.body.title,
         modifiedby: Routes.getUserName(req),
       };
-      return PO.updateById(req.params.id, obj, log);
+      const response = await DBPO.updateById(req.params.id, obj, log);
+      return normalize(response);
     };
 
     return Routes.put(req, res, handler, log);
@@ -60,7 +70,7 @@ export const initialize = (app: Express) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
     const handler: Parameters<typeof Routes.remove>[2] = () => {
-      return PO.remove(req.params.id, log);
+      return DBPO.remove(req.params.id, log);
     };
 
     return Routes.remove(req, res, handler, log);
@@ -68,3 +78,19 @@ export const initialize = (app: Express) => {
 
   app.use("/api/pos", router);
 };
+
+function normalize(db: DBPO.PO): PO {
+  const data = {
+    ...db,
+    createdBy: db.createdby,
+    modifiedBy: db.modifiedby,
+  };
+  delete data.createdby;
+  delete data.modifiedby;
+  return data;
+}
+
+export interface PO extends Omit<DBPO.PO, "createdby" | "modifiedby"> {
+  createdBy: string;
+  modifiedBy?: string;
+}

@@ -1,13 +1,8 @@
 import * as core from "./core";
 import _ from "lodash";
 
-export async function get(id: string): Promise<PO> {
-  const response = await core.get<DBPO>(`/pos/${id}`);
-  return {
-    ...response,
-    createdBy: response.createdby,
-    modifiedBy: response.modifiedby,
-  };
+export function get(id: string): Promise<PO> {
+  return core.get<PO>(`/pos/${id}`);
 }
 
 export async function list(
@@ -30,32 +25,23 @@ export async function list(
     paging = false;
   }
 
-  const response: core.ListResponse<DBPO> = { total: 0, value: [] };
+  const response: core.ListResponse<PO> = { total: 0, value: [] };
   await listCore(response, { title, start, size }, !paging);
 
-  return {
-    total: response.total,
-    value: response.value.map((item) => ({
-      ...item,
-      createdBy: item.createdby,
-      modifiedBy: item.modifiedby,
-    })),
-  };
+  return response;
 }
 
-export async function create(
+export function create(
   content: Readonly<Omit<PO, "id" | "created" | "createdBy" | "modified" | "modifiedBy">>
 ): Promise<PO> {
-  const db = await core.post<DBPO>(`/pos`, content);
-  return { ...db, createdBy: db.createdby, modifiedBy: db.modifiedby };
+  return core.post<PO>(`/pos`, content);
 }
 
-export async function update(
+export function update(
   id: string,
   content: Readonly<Omit<PO, "id" | "created" | "createdBy" | "modified" | "modifiedBy">>
 ): Promise<PO> {
-  const db = await core.put<DBPO>(`/pos/${id}`, content);
-  return { ...db, createdBy: db.createdby, modifiedBy: db.modifiedby };
+  return core.put<PO>(`/pos/${id}`, content);
 }
 
 export function remove(id: string): Promise<void> {
@@ -71,17 +57,8 @@ export interface PO {
   modifiedBy?: string;
 }
 
-interface DBPO {
-  id: string;
-  title: string;
-  created: string;
-  createdby: string;
-  modified?: string;
-  modifiedby?: string;
-}
-
 async function listCore(
-  data: { value: DBPO[]; total: number },
+  data: { value: PO[]; total: number },
   options: Required<Parameters<typeof list>>[0],
   autoQueryNextPage: boolean
 ) {
@@ -89,7 +66,7 @@ async function listCore(
   if (options.title) {
     url += `&title=${options.title}`;
   }
-  const response = await core.list<DBPO>(url);
+  const response = await core.list<PO>(url);
   data.total = response.total;
   data.value.push(...response.value);
 

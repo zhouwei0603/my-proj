@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { Express, Router } from "express";
 import * as Log from "../log/log";
-import * as Part from "../models/part.model";
+import * as DBPart from "../models/part.model";
 import * as Routes from "./routes";
 
 export const initialize = (app: Express) => {
@@ -11,10 +11,10 @@ export const initialize = (app: Express) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
     const handler: Parameters<typeof Routes.post>[2] = () => {
-      const obj: Parameters<typeof Part.create>[0] = {
+      const obj: Parameters<typeof DBPart.create>[0] = {
         name: req.body.name,
       };
-      return Part.create(obj, log);
+      return DBPart.create(obj, log);
     };
 
     return Routes.post(req, res, handler, log);
@@ -25,7 +25,7 @@ export const initialize = (app: Express) => {
 
     const handler: Parameters<typeof Routes.list>[2] = () => {
       const name = req.query.name as string;
-      return Part.getAll(name, Routes.convertListQueryToDbParams(req.query), log);
+      return DBPart.getAll(name, Routes.convertListQueryToDbParams(req.query), log);
     };
 
     return Routes.list(req, res, handler, log);
@@ -35,7 +35,7 @@ export const initialize = (app: Express) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
     const handler: Parameters<typeof Routes.get>[2] = () => {
-      return Part.findById(req.params.id, log);
+      return DBPart.findById(req.params.id, log);
     };
 
     return Routes.get(req, res, handler, log);
@@ -45,10 +45,10 @@ export const initialize = (app: Express) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
     const handler: Parameters<typeof Routes.put>[2] = () => {
-      const obj: Parameters<typeof Part.updateById>[1] = {
+      const obj: Parameters<typeof DBPart.updateById>[1] = {
         name: req.body.name,
       };
-      return Part.updateById(req.params.id, obj, log);
+      return DBPart.updateById(req.params.id, obj, log);
     };
 
     return Routes.put(req, res, handler, log);
@@ -58,7 +58,7 @@ export const initialize = (app: Express) => {
     const log: Log.Context = { trackId: randomUUID().toLowerCase() };
 
     const handler: Parameters<typeof Routes.remove>[2] = () => {
-      return Part.remove(req.params.id, log);
+      return DBPart.remove(req.params.id, log);
     };
 
     return Routes.remove(req, res, handler, log);
