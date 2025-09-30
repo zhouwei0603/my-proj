@@ -12,20 +12,16 @@ builder.Services.AddOpenApi();
 
 // Add MySQL connection
 {
-    var key = "DefaultMySqlConnection";
+    const string key = "DefaultMySqlConnection";
     var connectionString = builder.Configuration.GetConnectionString(key) ?? throw new InvalidOperationException($"Connection string '{key}' is not found.");
     builder.Services.AddDbContextFactory<AuthDbContext>(options => options.UseMySQL(connectionString));
 }
 
 // WeChat helper
 {
-    var appIdKey = "WeChatAppId";
-    var appId = builder.Configuration[appIdKey] ?? throw new InvalidOperationException($"The configuration '{appIdKey}' is not found.");
-    var secretKey = "WeChatAppSecret";
-    var secret = builder.Configuration[secretKey] ?? throw new InvalidOperationException($"The configuration '{secretKey}' is not found.");
-    var snsEndpointKey = "WeChatSnsEndpoint";
-    var snsEndpoint = builder.Configuration[snsEndpointKey] ?? throw new InvalidOperationException($"The configuration '{snsEndpointKey}' is not found.");
-    builder.Services.AddSingleton(new WeChatCommunicator(appId, secret, snsEndpoint));
+    const string key = "WeChatSnsEndpoint";
+    var snsEndpoint = builder.Configuration[key] ?? throw new InvalidOperationException($"The configuration '{key}' is not found.");
+    builder.Services.AddSingleton(new WeChatContext(snsEndpoint));
 }
 
 var app = builder.Build();

@@ -2,6 +2,8 @@
 
 All services, includeing MySQL, data access service and VUE portal, share a virtual network for communicating between the services.
 
+Run this command to build the image on your local machine and start the container. You only need to run this command the first time, and whenever you make changes to docker-compose.yml.
+
 <!-- Docker MySQL -->
 
 ## Create MySQL docker
@@ -17,8 +19,6 @@ All services, includeing MySQL, data access service and VUE portal, share a virt
 Run `npm run build`
 
 ### 2. Deploy data access service to docker
-
-Run this command to build the image on your local machine and start the container. You only need to run this command the first time, and whenever you make changes to docker-compose.yml.
 
 #### Local deployment (data access service)
 
@@ -39,8 +39,6 @@ Run `npm run build`
 
 ### 2. Deploy to docker
 
-Run this command to build the image on your local machine and start the container. You only need to run this command the first time, and whenever you make changes to docker-compose.yml.
-
 #### Local deployment (VUE portal)
 
 - `docker compose -f docker-compose.local.yml up --build --no-recreate -d vue`
@@ -54,9 +52,12 @@ N/A
 
 ## Create Auth Web API docker
 
-### Deploy Auth Web API to docker
+### 1. Add WeChat environment variables (compose or docker file)
 
-Run this command to build the image on your local machine and start the container. You only need to run this command the first time, and whenever you make changes to docker-compose.yml.
+- `WECHAT_APPID`
+- `WECHAT_SECRET`
+
+### Deploy Auth Web API to docker
 
 #### Local deployment (Auth Web API)
 
@@ -72,8 +73,6 @@ N/A
 ## Create Auth portal docker
 
 ### Deploy Auth portal to docker
-
-Run this command to build the image on your local machine and start the container. You only need to run this command the first time, and whenever you make changes to docker-compose.yml.
 
 #### Local deployment (Auth portal)
 

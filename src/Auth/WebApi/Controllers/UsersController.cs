@@ -8,7 +8,7 @@ namespace MyProj.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController(IDbContextFactory<AuthDbContext> factory, WeChatCommunicator weChat) : ControllerBase
+    public class UsersController(IDbContextFactory<AuthDbContext> factory, WeChatContext weChat) : ControllerBase
     {
         [HttpGet]
         public Task<IActionResult> GetUsers([FromQuery] Pagination pagination)
