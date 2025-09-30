@@ -11,7 +11,7 @@ namespace MyProj.WebApi.Validation
         {
             if (method == HttpMethod.Get || method == HttpMethod.Delete)
             {
-                foreach (var error in ValidateId(user, factory))
+                foreach (var error in ValidateId(user))
                 {
                     yield return error;
                 }
@@ -37,6 +37,41 @@ namespace MyProj.WebApi.Validation
             }
 
             throw new NotSupportedException($"HTTP method {method} is not supported for user validation.");
+        }
+
+        public static IEnumerable<string> ValidatePhone(User user)
+        {
+            if (string.IsNullOrWhiteSpace(user.Phone))
+            {
+                yield return "User phone number is required.";
+            }
+            else if (string.IsNullOrWhiteSpace(user.CountryCode))
+            {
+                yield return "User country code is required.";
+            }
+            else if (user.CountryCode == CountryCodes.ChinaMainland)
+            {
+                if (user.Phone.Length != 11 && !int.TryParse(user.Phone, out _))
+                {
+                    yield return "User phone number is invalid.";
+                }
+            }
+            else
+            {
+                yield return "The country code is not supported";
+            }
+        }
+
+        public static IEnumerable<string> ValidateWeChatOpenId(User user)
+        {
+            if (string.IsNullOrWhiteSpace(user.WeChatOpenId))
+            {
+                yield return "User WeChat open ID is required.";
+            }
+            else if (user.WeChatOpenId.Length != 28)
+            {
+                yield return "User WeChat open ID is invalid.";
+            }
         }
 
         private static async IAsyncEnumerable<string> ValidateForUpdateAsync(User user, IDbContextFactory<AuthDbContext> factory)
@@ -119,7 +154,7 @@ namespace MyProj.WebApi.Validation
             }
         }
 
-        private static IEnumerable<string> ValidateId(User user, IDbContextFactory<AuthDbContext> factory)
+        private static IEnumerable<string> ValidateId(User user)
         {
             if (string.IsNullOrWhiteSpace(user.Id))
             {

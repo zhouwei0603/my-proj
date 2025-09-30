@@ -17,6 +17,17 @@ builder.Services.AddOpenApi();
     builder.Services.AddDbContextFactory<AuthDbContext>(options => options.UseMySQL(connectionString));
 }
 
+// WeChat helper
+{
+    var appIdKey = "WeChatAppId";
+    var appId = builder.Configuration[appIdKey] ?? throw new InvalidOperationException($"The configuration '{appIdKey}' is not found.");
+    var secretKey = "WeChatAppSecret";
+    var secret = builder.Configuration[secretKey] ?? throw new InvalidOperationException($"The configuration '{secretKey}' is not found.");
+    var snsEndpointKey = "WeChatSnsEndpoint";
+    var snsEndpoint = builder.Configuration[snsEndpointKey] ?? throw new InvalidOperationException($"The configuration '{snsEndpointKey}' is not found.");
+    builder.Services.AddSingleton(new WeChatCommunicator(appId, secret, snsEndpoint));
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,8 +38,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapControllers();
+
+// Change the route configuration before ASP.NET handles the routing
+app.UseMiddleware<UserQueryRoutingMiddleware>();
+
+app.UseRouting();
+
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(e => { });
 
 app.Run();

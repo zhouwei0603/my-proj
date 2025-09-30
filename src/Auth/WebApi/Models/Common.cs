@@ -32,4 +32,9 @@ namespace MyProj.WebApi.Models
         [JsonPropertyName("value")]
         public IEnumerable<T> Items { get; set; } = [];
     }
+
+    public static class CountryCodes
+    {
+        public static readonly string ChinaMainland = "86";
+    }
 }

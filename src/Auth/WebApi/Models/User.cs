@@ -24,6 +24,22 @@ namespace MyProj.WebApi.Models
 
         [Column("avatar_url")]
         [JsonPropertyName("avatarUrl")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? AvatarUrl { get; set; }
+
+        [Column("phone")]
+        [JsonPropertyName("phone")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Phone { get; set; }
+
+        [Column("country_code")]
+        [JsonPropertyName("countryCode")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? CountryCode { get; set; }
+
+        [Column("wx_openid")]
+        [JsonPropertyName("wechatOpenId")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? WeChatOpenId { get; set; }
     }
 }
