@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import * as MySql from "mysql2";
 import * as Log from "../log/log";
-import { appendPagingSql, execute, GetAllParams, toMySqlString } from "./db";
+import { appendPagingSql, execute, GetAllParams, toMySqlString, appendOrderBySql } from "./db";
 
 export interface PO {
   id: string;
@@ -71,6 +71,8 @@ export const getAll = async (title: string, params: GetAllParams, log: Log.Conte
       totalSql += where;
     }
 
+    // TODO: Make orderBy and orderDirection configurable
+    valueSql = appendOrderBySql(valueSql, "id", "ASC");
     valueSql = appendPagingSql(valueSql, params);
 
     Log.writeInfo("DB will get pos: ", Object.assign({ data: { valueSql, totalSql } }, log));

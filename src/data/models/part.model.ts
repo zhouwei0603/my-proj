@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import * as MySql from "mysql2";
 import * as Log from "../log/log";
-import { appendPagingSql, execute, GetAllParams } from "./db";
+import { appendPagingSql, execute, GetAllParams, appendOrderBySql } from "./db";
 
 export interface Part {
   id: string;
@@ -65,6 +65,8 @@ export const getAll = async (name: string, params: GetAllParams, log: Log.Contex
       totalSql += where;
     }
 
+    // TODO: Make orderBy and orderDirection configurable
+    valueSql = appendOrderBySql(valueSql, "id", "ASC");
     valueSql = appendPagingSql(valueSql, params);
 
     Log.writeInfo("DB will get parts: ", Object.assign({ data: { valueSql, totalSql } }, log));

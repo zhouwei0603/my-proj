@@ -1,25 +1,23 @@
 import _ from "lodash";
 import { type AppPlugin } from "./AppContext";
+import { format } from "./String";
 
 export function toDisplayString(plugin: AppPlugin, ms: number): string {
   const strings = plugin.strings;
 
   if (ms >= day) {
-    const compiled = _.template(strings.value.app.timeSpan.day);
     const value = _.toInteger(ms / day);
-    return compiled({ value });
+    return format(strings.value.app.timeSpan.day, { value });
   }
 
   if (ms >= hour) {
-    const compiled = _.template(strings.value.app.timeSpan.hour);
     const value = _.toInteger(ms / hour);
-    return compiled({ value });
+    return format(strings.value.app.timeSpan.hour, { value });
   }
 
   if (ms >= minute) {
-    const compiled = _.template(strings.value.app.timeSpan.minute);
     const value = _.toInteger(ms / minute);
-    return compiled({ value });
+    return format(strings.value.app.timeSpan.minute, { value });
   }
 
   return strings.value.app.timeSpan.second;

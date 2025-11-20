@@ -53,6 +53,11 @@ export const appendPagingSql = (sql: string, params: GetAllParams) => {
   return sql;
 };
 
+export const appendOrderBySql = (sql: string, orderBy: string, orderDirection: "ASC" | "DESC") => {
+  sql += ` ORDER BY ${orderBy} ${orderDirection}`;
+  return sql;
+};
+
 export interface DbError {
   kind: "not_found" | "internal";
   message: string;

@@ -57,7 +57,7 @@ const list = async (name: string, page: number) => {
       <el-header>
         <el-row>
           <el-col :span="18" class="commands">
-            <el-button type="primary" :disabled="busy" @click="init">{{ strings.views.refresh }}</el-button>
+            <el-button type="primary" :disabled="busy" @click="init">{{ strings.app.commands.refresh }}</el-button>
           </el-col>
           <el-col :span="6" class="search">
             <search-box :onSearch="onSearch" :value="searchName" :placeholder="strings.views.part.searchByName" />

@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import * as MySql from "mysql2";
 import * as Log from "../log/log";
-import { appendPagingSql, execute, GetAllParams, toMySqlString } from "./db";
+import { appendPagingSql, execute, GetAllParams, toMySqlString, appendOrderBySql } from "./db";
 
 export interface POItem {
   id: string;
@@ -82,6 +82,8 @@ export const getAll = async (poid: string, params: GetAllParams, log: Log.Contex
     let valueSql = "SELECT * FROM poitem WHERE poid = ?";
     let totalSql = "SELECT COUNT(id) as total FROM poitem WHERE poid = ?";
 
+    // TODO: Make orderBy and orderDirection configurable
+    valueSql = appendOrderBySql(valueSql, "id", "ASC");
     valueSql = appendPagingSql(valueSql, params);
 
     Log.writeInfo("DB will get poitems: ", Object.assign({ data: { valueSql, totalSql } }, log));

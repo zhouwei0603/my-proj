@@ -6,7 +6,13 @@ export function get(id: string) {
 }
 
 export async function list(
-  options?: Readonly<{ name: string; start: number; size: number }>
+  name?: string
+): Promise<core.ListResponse<Part>>
+export async function list(
+  options?: Readonly<{ name?: string; start: number; size: number }>
+): Promise<core.ListResponse<Part>>
+export async function list(
+  params?: string | Readonly<{ name?: string; start: number; size: number }>
 ): Promise<core.ListResponse<Part>> {
   const result: core.ListResponse<Part> = { total: 0, value: [] };
 
@@ -15,16 +21,21 @@ export async function list(
   let start: number;
   let paging: boolean;
 
-  if (options) {
-    name = options.name;
-    size = options.size;
-    start = options.start;
-    paging = true;
-  } else {
+  if (_.isNil(params)) {
     name = "";
     size = 100;
     start = 0;
     paging = false;
+  } else if (_.isString(params)) {
+    name = params;
+    size = 100;
+    start = 0;
+    paging = false;
+  } else {
+    name = params.name || "";
+    size = params.size;
+    start = params.start;
+    paging = true;
   }
 
   await listCore(result, { name, start, size }, !paging);

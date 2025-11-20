@@ -29,3 +29,10 @@ a.router-link:visited {
 a.router-link:hover {
   text-decoration: underline;
 }
+
+.toolbar button {
+  border: none;
+  border-radius: 0;
+  background: none;
+  padding: 8px;
+}
