@@ -23,8 +23,9 @@ const props = withDefaults(
     poitemid?: string;
   }>(),
   {
+    operation: Operation.InlineCreate,
     poitems: () => [],
-    poitem: () => ({ id: _.uniqueId("newpoitem_"), count: Validation.POItemMinCount, partid: "" }),
+    poitem: () => ({ id: "", count: Validation.POItemMinCount, partid: "" }),
     poid: "",
     poitemid: "",
   }
@@ -50,16 +51,28 @@ const poitem = reactive<POItemViewModel>({
 });
 
 const load = async () => {
-  if (props.operation === Operation.StandaloneUpdate) {
-    try {
-      loading.value = true;
+  switch (props.operation) {
+    case Operation.InlineUpdate: {
+      poitem.id = props.poitem.id;
+      poitem.count = props.poitem.count;
+      poitem.partid = props.poitem.partid;
 
-      const response = await getPOItem(props.poitemid);
-      poitem.id = response.id;
-      poitem.partid = response.partid;
-      poitem.count = response.count;
-    } finally {
-      loading.value = false;
+      break;
+    }
+    
+    case Operation.StandaloneUpdate: {
+      try {
+        loading.value = true;
+
+        const response = await getPOItem(props.poitemid);
+        poitem.id = response.id;
+        poitem.partid = response.partid;
+        poitem.count = response.count;
+      } finally {
+        loading.value = false;
+      }
+
+      break;
     }
   }
 };
@@ -138,7 +151,7 @@ const close = () => {
 const clear = () => {
   poitem.count = Validation.POItemMinCount;
   poitem.partid = "";
-  formInstance.value?.clearValidate();
+  formInstance.value!.clearValidate();
 };
 
 const getRules = () => {
