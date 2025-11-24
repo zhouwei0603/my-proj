@@ -112,6 +112,17 @@ export type Strings = DeepReadonly<{
     };
   };
   views: {
+    home: {
+      poTotal: string;
+      poPartSoldTotal: string;
+      poPartUnsoldTotal: string;
+      partTotal: string;
+      partSoldTotal: string;
+      partUnsoldTotal: string;
+      partBestSoldFirst: string;
+      partBestSoldSecond: string;
+      partBestSoldThird: string;
+    },
     part: {
       searchByName: string;
       selectFilterPlaceholder: string;

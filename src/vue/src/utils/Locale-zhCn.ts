@@ -112,6 +112,17 @@ export const strings: Strings = {
     },
   },
   views: {
+    home: {
+      poTotal: "采购订单总数",
+      poPartSoldTotal: "已售零件总数",
+      poPartUnsoldTotal: "未售零件总数",
+      partTotal: "零件总数",
+      partSoldTotal: "已售零件总数",
+      partUnsoldTotal: "未售零件总数",
+      partBestSoldFirst: "最畅销零件",
+      partBestSoldSecond: "次畅销零件",
+      partBestSoldThird: "第三畅销零件",
+    },
     part: {
       searchByName: "按名称搜索",
       selectFilterPlaceholder: "输入以搜索零件",

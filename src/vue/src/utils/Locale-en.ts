@@ -112,6 +112,17 @@ export const strings: Strings = {
     },
   },
   views: {
+    home: {
+      poTotal: "Total POs",
+      poPartSoldTotal: "Total parts sold",
+      poPartUnsoldTotal: "Total parts unsold",
+      partTotal: "Total parts",
+      partSoldTotal: "Total parts sold",
+      partUnsoldTotal: "Total parts unsold",
+      partBestSoldFirst: "Gold",
+      partBestSoldSecond: "Silver",
+      partBestSoldThird: "Bronze",
+    },
     part: {
       searchByName: "Search by name",
       selectFilterPlaceholder: "Type to search parts",
