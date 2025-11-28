@@ -22,6 +22,11 @@ export const execute = async <T>(action: (connection: MySql.PoolConnection) => P
   const connection = await pool.getConnection();
 
   try {
+    // TODO: remove the delay in production
+    if (process.env.NODE_ENV !== "production") {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    }
+
     // Execute a simple query
     return await action(connection);
   } catch (err) {

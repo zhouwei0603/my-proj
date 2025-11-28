@@ -18,9 +18,6 @@ export const enum DataSource {
 
 async function execute<T>(options: { relativeUrl: string, source: DataSource }): Promise<T> {
   try {
-    // TODO: remove the delay in production
-    await new Promise((resolve) => setTimeout(resolve, 3000))
-
     const dataEndpoint = dataSourceEndpoint.get(options.source)
 
     return new Promise<T>((resolve, reject) => {

@@ -87,8 +87,6 @@ const withoutContentInstance = axios.create({
 
 async function execute<T>(action: () => Promise<T>) {
   try {
-    // TODO: remove the delay in production
-    await new Promise(resolve => setTimeout(resolve, 3000));
     return await action();
   } catch (error) {
     if (axios.isAxiosError(error)) {
