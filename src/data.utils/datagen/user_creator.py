@@ -72,4 +72,6 @@ def _create_task(begin: int, end: int):
     creator.create()
 
 if __name__ == "__main__":
+    print(f"Creating users with URL: {AUTH_SCHEMA}://{AUTH_HOST}:{AUTH_PORT}/api/users...")
     _create()
+    print(f"Finished creating users with URL: {AUTH_SCHEMA}://{AUTH_HOST}:{AUTH_PORT}/api/users")

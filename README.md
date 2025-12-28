@@ -8,7 +8,7 @@ Run this command to build the image on your local machine and start the containe
 
 ## Create MySQL docker
 
-`docker run --name my-mysql --network my-proj --network-alias my-mysql -e MYSQL_ROOT_PASSWORD=Password01! -d -p 3306:3306 -v C:\Users\周巍\repos\docker\my-mysql\data:/var/lib/mysql mysql:9.4` **(Replace the path according to your machine.)**
+`docker run --name my-mysql --network my-proj --network-alias my-mysql -e MYSQL_ROOT_PASSWORD=Password01! -d -p 3306:3306 -v C:\repos\docker\my-mysql\data:/var/lib/mysql mysql:9.4` **(Replace the path according to your machine.)**
 
 <!-- Docker data -->
 

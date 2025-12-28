@@ -56,14 +56,14 @@ python3 part_creator.py
             "name": "Python Debugger: PO data generator script",
             "type": "debugpy",
             "request": "launch",
-            "program": "C:\\Users\\周巍\\repos\\my-proj\\src\\data.utils\\datagen\\po_creator.py",
+            "program": "C:\\repos\\my-proj\\src\\data.utils\\datagen\\po_creator.py",
             "console": "integratedTerminal"
         },
         {
             "name": "Python Debugger: Part data generator script",
             "type": "debugpy",
             "request": "launch",
-            "program": "C:\\Users\\周巍\\repos\\my-proj\\src\\data.utils\\datagen\\part_creator.py",
+            "program": "C:\\repos\\my-proj\\src\\data.utils\\datagen\\part_creator.py",
             "console": "integratedTerminal"
         }
     ]

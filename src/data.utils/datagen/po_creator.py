@@ -97,4 +97,6 @@ def _fill_part_ids(partids: list[str], start: int):
 _PAGING_SIZE = 100
 
 if __name__ == "__main__":
+    print(f"Creating POs with URL: {DATA_SCHEMA}://{DATA_HOST}:{DATA_PORT}/api/pos...")
     _create()
+    print(f"Finished creating POs with URL: {DATA_SCHEMA}://{DATA_HOST}:{DATA_PORT}/api/pos")

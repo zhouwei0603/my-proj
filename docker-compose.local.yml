@@ -53,6 +53,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=DevelopmentLocal
       - ASPNETCORE_HTTP_PORTS=6666
+      # - WECHAT_APPID=
+      # - WECHAT_SECRET=
     stdin_open: true
     tty: true
 

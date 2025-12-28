@@ -69,4 +69,6 @@ def _create_task(begin: int, end: int):
     creator.create()
 
 if __name__ == "__main__":
+    print(f"Creating parts with URL: {DATA_SCHEMA}://{DATA_HOST}:{DATA_PORT}/api/parts...")
     _create()
+    print(f"Finished creating parts with URL: {DATA_SCHEMA}://{DATA_HOST}:{DATA_PORT}/api/parts")
