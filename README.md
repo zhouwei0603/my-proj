@@ -4,11 +4,23 @@ All services, includeing MySQL, data access service and VUE portal, share a virt
 
 Run this command to build the image on your local machine and start the container. You only need to run this command the first time, and whenever you make changes to docker-compose.yml.
 
+<!-- Docker Ubuntu -->
+
+## Create Ubuntu docker
+
+`docker run -it --name my-ubuntu --network my-proj ubuntu`
+
+`docker exec -it my-ubuntu bash`
+
 <!-- Docker MySQL -->
 
 ## Create MySQL docker
 
-`docker run --name my-mysql --network my-proj --network-alias my-mysql -e MYSQL_ROOT_PASSWORD=Password01! -d -p 3306:3306 -v C:\repos\docker\my-mysql\data:/var/lib/mysql mysql:9.4` **(Replace the path according to your machine.)**
+Please ensure the docker network my-proj exists. If not, create it using:
+
+`docker network create my-proj`
+
+`docker run --name my-mysql --network my-proj --network-alias my-mysql -e MYSQL_ROOT_PASSWORD=Password01! -d -p 3306:3306 -v C:\Users\zhouwei\docker_mount\mysql94:/var/lib/mysql mysql:9.4` **(Replace the path according to your machine.)**
 
 <!-- Docker data -->
 
